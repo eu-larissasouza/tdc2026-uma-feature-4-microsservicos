@@ -31,7 +31,12 @@
     }
     *{box-sizing:border-box; margin:0; padding:0;}
     body{
-      background:var(--bg); color:var(--text); font-family:var(--body);
+      background:
+        radial-gradient(1100px 760px at 90% -8%, rgba(238, 86, 175, 0.45), transparent 60%),
+        radial-gradient(700px 500px at 8% 108%, rgba(94, 11, 64, 0.55), transparent 65%),
+        radial-gradient(500px 400px at 50% 100%, rgba(238, 86, 175, 0.18), transparent 70%),
+        var(--bg);
+      color:var(--text); font-family:var(--body);
       -webkit-font-smoothing:antialiased; min-height:100vh;
     }
     .tdc-stripe{position:fixed; top:0; left:0; right:0; height:4px; display:flex; z-index:60;}
@@ -108,9 +113,9 @@
 
     .zip-node{
       width:170px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      background:linear-gradient(155deg, var(--violet-mid), var(--violet-deep)); border-radius:14px;
+      background:linear-gradient(155deg, #ee56af, var(--violet-deep)); border-radius:14px;
       font-family:var(--mono); font-size:.85rem; color:#fff; padding:1rem; text-align:center;
-      box-shadow:0 20px 40px -18px rgba(108,53,217,.6);
+      box-shadow:0 20px 40px -18px rgba(238,86,175,.6);
     }
     .zip-flow{display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; justify-content:center;}
     .zip-arrow{font-size:1.6rem; color:var(--violet); flex-shrink:0;}
@@ -129,7 +134,6 @@
     }
     .tok{color:var(--lime);} .str{color:var(--amber);} .com{color:#5F5C74; font-style:italic;} .kw{color:var(--violet);}
 
-    /* Ajustes e alinhamento do JSON Header & Badge */
     .section-header{
       display:flex;
       align-items:center;
@@ -321,7 +325,7 @@
 
   <footer>
     Demo construída para a palestra "Uma feature, quatro microsserviços" · TDC São Paulo 2026 ·
-    <a class="back" style="color: var(--lime)" href="./index.html">← voltar para os slides</a>
+    <a class="back" style="color: var(--lime)" href="./index.html#19">← voltar para os slides</a>
   </footer>
 </div>
 

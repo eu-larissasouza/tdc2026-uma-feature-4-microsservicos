@@ -959,7 +959,28 @@
 
     <div class="deck" id="deck">
       <!-- 1. CAPA -->
-      <section class="slide slide-capa">
+      <section
+        class="slide slide-capa"
+        style="
+          background:
+            radial-gradient(
+              1100px 760px at 90% -8%,
+              rgba(238, 86, 175, 0.45),
+              transparent 60%
+            ),
+            radial-gradient(
+              700px 500px at 8% 108%,
+              rgba(94, 11, 64, 0.55),
+              transparent 65%
+            ),
+            radial-gradient(
+              500px 400px at 50% 100%,
+              rgba(238, 86, 175, 0.18),
+              transparent 70%
+            ),
+            var(--bg);
+        "
+      >
         <div
           class="deco-circle"
           style="
@@ -967,7 +988,7 @@
             height: 420px;
             top: -140px;
             right: -60px;
-            border-color: rgba(201, 182, 245, 0.28);
+            border-color: rgba(238, 86, 175, 0.28);
           "
         ></div>
         <div
@@ -977,7 +998,7 @@
             height: 180px;
             top: 22%;
             right: 14%;
-            border-color: rgba(108, 53, 217, 0.4);
+            border-color: rgba(238, 86, 175, 0.4);
           "
         ></div>
         <img
@@ -1799,7 +1820,28 @@
       </section>
 
       <!-- 30. MUITO OBRIGADA -->
-      <section class="slide slide-capa">
+      <section
+        class="slide slide-capa"
+        style="
+          background:
+            radial-gradient(
+              1100px 760px at 90% -8%,
+              rgba(238, 86, 175, 0.45),
+              transparent 60%
+            ),
+            radial-gradient(
+              700px 500px at 8% 108%,
+              rgba(94, 11, 64, 0.55),
+              transparent 65%
+            ),
+            radial-gradient(
+              500px 400px at 50% 100%,
+              rgba(238, 86, 175, 0.18),
+              transparent 70%
+            ),
+            var(--bg);
+        "
+      >
         <div
           class="deco-circle"
           style="
@@ -1807,7 +1849,7 @@
             height: 300px;
             bottom: -100px;
             left: -60px;
-            border-color: rgba(201, 182, 245, 0.28);
+            border-color: rgba(238, 86, 175, 0.28);
           "
         ></div>
         <div class="eyebrow">Fim de faixa</div>
@@ -1852,6 +1894,72 @@
             </p>
             <p class="sub" style="margin-top: 0.5rem; max-width: none">
               Larissa Souza · TDC São Paulo 2026
+            </p>
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+            margin-top: 1.6rem;
+          "
+        >
+          <div
+            id="repo-qr"
+            style="
+              background: #fff;
+              padding: 10px;
+              border-radius: 12px;
+              width: 132px;
+              height: 132px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+            "
+          ></div>
+          <div>
+            <p
+              class="sub"
+              style="
+                margin-top: 0;
+                font-family: var(--mono);
+                color: var(--violet-light);
+                max-width: none;
+              "
+            >
+              Material completo (slides + demo)
+            </p>
+            <p class="sub" style="margin-top: 0.4rem; max-width: none">
+              <a
+                href="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos"
+                target="_blank"
+                rel="noopener"
+                class="go-demo"
+                style="color: var(--lime)"
+                >github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos</a
+              >
+            </p>
+            <p class="sub" style="margin-top: 0.3rem; max-width: none">
+              <a
+                href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/"
+                target="_blank"
+                rel="noopener"
+                style="color: var(--violet-light)"
+                class="go-demo"
+                >Slides</a
+              >
+              ·
+              <a
+                href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html"
+                target="_blank"
+                rel="noopener"
+                style="color: var(--violet-light)"
+                class="go-demo"
+                >Demo</a
+              >
             </p>
           </div>
         </div>
@@ -1943,6 +2051,13 @@
       const total = slides.length
       let idx = 0
 
+      // Permite abrir num slide específico via #N (ex: index.html#19),
+      // usado pelo link "voltar para os slides" da demo.
+      const hashSlide = parseInt(window.location.hash.replace('#', ''), 10)
+      if (!Number.isNaN(hashSlide) && hashSlide >= 1 && hashSlide <= total) {
+        idx = hashSlide - 1
+      }
+
       const notesBySlide = [
         'Capa. Respirar, sorrir, deixar 3 segundos de silêncio antes de falar o título.',
         'Quem sou eu. Contar de cabeça, sem ler a lista.',
@@ -1989,6 +2104,14 @@
       if (window.QRCode) {
         new QRCode(document.getElementById('linkedin-qr'), {
           text: 'https://www.linkedin.com/in/larissa-a-souza',
+          width: 112,
+          height: 112,
+          colorDark: '#101018',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        })
+        new QRCode(document.getElementById('repo-qr'), {
+          text: 'https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos',
           width: 112,
           height: 112,
           colorDark: '#101018',

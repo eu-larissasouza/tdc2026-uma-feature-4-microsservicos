@@ -1,8 +1,15 @@
 # Palestra: Uma feature, quatro microsserviços
 
-Esse repositório os materiais (slides e demo interativa) utilizados na palestra **"Uma feature, quatro microsserviços: Entregando funcionalidades em ecossistemas Java de alta escala"**, apresentada por Larissa Souza na "Trilha Arquitetura Java" do TDC São Paulo 2026.
+Esse repositório reúne os materiais (slides e demo interativa) utilizados na palestra **"Uma feature, quatro microsserviços: Entregando funcionalidades em ecossistemas Java de alta escala"**, apresentada por Larissa Souza na trilha "Arquitetura Java" do TDC São Paulo 2026.
 
 A talk mostra como uma tela aparentemente simples — a confirmação de compra de um marketplace — atravessa uma arquitetura reativa com Server-Driven UI (SDUI), e como um detalhe de `Mono.zip()` no fan-out de 7 fontes de dados pode derrubar a tela inteira. O material cobre programação reativa, as camadas do ecossistema, o ciclo de vida de uma requisição, feature flags e o processo de review/deploy.
+
+## 🔗 Acesso rápido
+
+- **Slides:** https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/
+- **Demo (bug do `Mono.zip()`):** https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html
+
+Um QR code para este repositório também está disponível no último slide da apresentação.
 
 ## 📸 Preview
 
@@ -14,13 +21,12 @@ A talk mostra como uma tela aparentemente simples — a confirmação de compra 
 |---|
 | ![Demo do Mono.zip()](screenshots/demo-preview.png) |
 
-
 ## 📁 Estrutura do repositório
 
 ```
-tdc2026-uma-feature-quatro-microsservicos/
-├── index.html      # Slides da apresentação
-├── demo.html        # Demo interativa: bug e fix do Mono.zip()
+tdc2026-uma-feature-4-microsservicos/
+├── index.html            # Slides da apresentação
+├── demo-mono-zip.html     # Demo interativa: bug e fix do Mono.zip()
 ├── screenshots/
 │   ├── slides-preview.png
 │   └── demo-preview.png
@@ -45,6 +51,7 @@ python3 -m http.server 8000
 - Totalmente responsivo (desktop e mobile), com navegação por swipe/toque e setas flutuantes nos slides.
 - Identidade visual com a paleta oficial da TDC aplicada em detalhes (faixa no topo, bordas, eyebrows).
 - Demo com diagrama de fan-out paralelo (7 fontes → `Mono.zip()`), JSON emitido pelo middleend (SDUI) e comparação lado a lado entre a versão com bug (`Mono.empty()`) e a versão corrigida (`Mono.just()` com objeto vazio).
+- O link "← voltar para os slides" na demo retorna direto para o slide 19 (`index.html#19`), onde a demo é introduzida.
 
 ## 📝 Licença
 
