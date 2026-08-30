@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo — Mono.zip() &amp; Server-Driven UI · TDC São Paulo 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #101018;
+      --bg-raised: #1B1B27;
+      --bg-card: #201F2E;
+      --violet: #8B5CF6;
+      --violet-mid: #6C35D9;
+      --violet-deep: #290B5E;
+      --violet-light: #C9B6F5;
+      --lime: #C6FF3D;
+      --text: #F4F2FA;
+      --muted: #8D8AA0;
+      --line: #2E2C3E;
+      --red: #FF6B6B;
+      --amber: #F5C97B;
+      --green: #4ADE80;
+      --display: 'Space Grotesk', sans-serif;
+      --body: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+
+      --tdc-red:#c22821; --tdc-orange:#e35100; --tdc-yellow:#fcb045; --tdc-green:#019a2e;
+      --tdc-darkgreen:#0a6b34; --tdc-blue:#004e91; --tdc-blue-light:#6fb3ff; --tdc-darkblue:#02264a; --tdc-violet:#833ab4;
+    }
+    *{box-sizing:border-box; margin:0; padding:0;}
+    body{
+      background:var(--bg); color:var(--text); font-family:var(--body);
+      -webkit-font-smoothing:antialiased; min-height:100vh;
+    }
+    .tdc-stripe{position:fixed; top:0; left:0; right:0; height:4px; display:flex; z-index:60;}
+    .tdc-stripe span{flex:1;}
+    .tdc-stripe span:nth-child(1){background:var(--tdc-red);}
+    .tdc-stripe span:nth-child(2){background:var(--tdc-orange);}
+    .tdc-stripe span:nth-child(3){background:var(--tdc-yellow);}
+    .tdc-stripe span:nth-child(4){background:var(--tdc-green);}
+    .tdc-stripe span:nth-child(5){background:var(--tdc-darkgreen);}
+    .tdc-stripe span:nth-child(6){background:var(--tdc-blue);}
+    .tdc-stripe span:nth-child(7){background:var(--tdc-darkblue);}
+    .tdc-stripe span:nth-child(8){background:var(--tdc-violet);}
+
+    .wrap{max-width:1180px; margin:0 auto; padding:5.5rem 2rem 4rem; overflow-x:hidden;}
+
+    header.top{margin-bottom:2.4rem;}
+    .eyebrow{
+      font-family:var(--mono); font-size:.8rem; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--lime); margin-bottom:.9rem; display:flex; align-items:center; gap:.6rem;
+    }
+    .eyebrow::before{content:"●"; font-size:.6rem; color:var(--violet);}
+    h1{font-family:var(--display); font-weight:700; font-size:clamp(1.8rem,3.4vw,2.6rem); line-height:1.15;}
+    .sub{color:var(--muted); font-size:1.02rem; margin-top:.9rem; max-width:76ch; line-height:1.6;}
+    code{font-family:var(--mono); background:rgba(139,92,246,.12); padding:.1rem .35rem; border-radius:5px; font-size:.92em;}
+
+    .controls{
+      display:flex; flex-wrap:wrap; align-items:center; gap:1rem; margin-top:1.8rem;
+      background:var(--bg-card); border:1px solid var(--line); border-radius:14px; padding:1.2rem 1.4rem;
+    }
+    button{
+      font-family:var(--display); font-weight:600; font-size:.92rem; border:none; border-radius:10px;
+      padding:.75rem 1.3rem; cursor:pointer; transition:transform .15s ease, opacity .15s ease;
+      display:inline-flex; align-items:center; gap:.5rem;
+    }
+    button:active{transform:scale(.97);}
+    button:disabled{opacity:.4; cursor:not-allowed;}
+    .btn-bug{background:rgba(255,107,107,.16); color:var(--red); border:1px solid rgba(255,107,107,.5);}
+    .btn-fix{background:rgba(74,222,128,.16); color:var(--green); border:1px solid rgba(74,222,128,.5);}
+    .btn-fix-content{background:rgba(0,78,145,.18); color:var(--tdc-blue-light); border:1px solid rgba(111,179,255,.5);}
+    .btn-reset{background:var(--bg-raised); color:var(--muted); border:1px solid var(--line); margin-left:auto;}
+
+    .banner{
+      margin-top:1.4rem; padding:.9rem 1.2rem; border-radius:12px; font-family:var(--mono); font-size:.9rem;
+      border:1px solid var(--line); background:var(--bg-raised); color:var(--muted);
+      display:flex; align-items:center; gap:.6rem; min-height:1.4rem;
+    }
+    .banner.bug{border-color:rgba(255,107,107,.5); background:rgba(255,107,107,.08); color:var(--red);}
+    .banner.fix{border-color:rgba(74,222,128,.5); background:rgba(74,222,128,.08); color:var(--green);}
+
+    section{margin-top:2.6rem;}
+    h2{font-family:var(--display); font-weight:600; font-size:1.3rem; margin-bottom:0;}
+
+    .zip-diagram{
+      display:flex; flex-wrap:wrap; gap:.9rem; align-items:stretch; justify-content:center;
+      width:calc(4*150px + 3*0.9rem); flex-shrink:0;
+    }
+    .src-box{
+      width:150px; background:var(--bg-card); border:1px solid var(--line); border-radius:12px;
+      padding:.9rem .8rem; text-align:center; transition:border-color .3s, background .3s, opacity .3s;
+      position:relative;
+    }
+    .src-box .name{font-family:var(--display); font-size:.82rem; font-weight:600; margin-bottom:.6rem;}
+    .src-box .status{font-family:var(--mono); font-size:.72rem; color:var(--muted); display:flex; align-items:center; justify-content:center; gap:.35rem;}
+    .src-box .dot{width:8px; height:8px; border-radius:50%; background:var(--line); transition:background .25s;}
+    .src-box[data-state="loading"] .dot{background:var(--violet); animation:pulse 1s infinite;}
+    .src-box[data-state="done"] .dot{background:var(--green);}
+    .src-box[data-state="fallback"] .dot{background:var(--amber);}
+    .src-box[data-state="cancelled"]{border-color:rgba(255,107,107,.6); background:rgba(255,107,107,.08); opacity:.55;}
+    .src-box[data-state="cancelled"] .dot{background:var(--red);}
+    .src-box[data-state="done"]{border-color:rgba(74,222,128,.45);}
+    .src-box[data-state="fallback"]{border-color:rgba(245,201,123,.5);}
+    .src-box.rights{border-top:3px solid var(--tdc-blue);}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+    .zip-node{
+      width:170px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:linear-gradient(155deg, var(--violet-mid), var(--violet-deep)); border-radius:14px;
+      font-family:var(--mono); font-size:.85rem; color:#fff; padding:1rem; text-align:center;
+      box-shadow:0 20px 40px -18px rgba(108,53,217,.6);
+    }
+    .zip-flow{display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; justify-content:center;}
+    .zip-arrow{font-size:1.6rem; color:var(--violet); flex-shrink:0;}
+
+    @media (max-width: 730px){
+      .zip-flow{flex-direction:column;}
+      .zip-arrow{transform:rotate(90deg);}
+    }
+
+    .grid-2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1.6rem;}
+    @media (max-width:860px){ .grid-2{grid-template-columns:minmax(0,1fr);} }
+
+    pre{
+      background:#0B0B12; border:1px solid var(--line); border-radius:12px; padding:1.1rem 1.3rem;
+      font-family:var(--mono); font-size:.84rem; line-height:1.6; overflow:auto; color:#DAD6F0; max-height:340px;
+    }
+    .tok{color:var(--lime);} .str{color:var(--amber);} .com{color:#5F5C74; font-style:italic;} .kw{color:var(--violet);}
+
+    /* Ajustes e alinhamento do JSON Header & Badge */
+    .section-header{
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      margin-bottom:1.1rem;
+      flex-wrap:wrap;
+      min-height:32px;
+    }
+    .json-panel{
+      display:flex;
+      flex-direction:column;
+    }
+    .json-panel pre{
+      white-space:pre-wrap;
+      word-break:break-word;
+      overflow-x:hidden;
+    }
+    .tag{
+      font-family:var(--mono);
+      font-size:.72rem;
+      font-weight:700;
+      padding:.3rem .7rem;
+      border-radius:20px;
+      letter-spacing:.05em;
+      display:none;
+      text-transform:uppercase;
+    }
+    .tag.show{display:inline-flex; align-items:center;}
+    .tag.bug{background:rgba(255,107,107,.15); color:var(--red); border:1px solid rgba(255,107,107,.4);}
+    .tag.fix{background:rgba(74,222,128,.15); color:var(--green); border:1px solid rgba(74,222,128,.4);}
+
+    .code-cols{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1.4rem;}
+    @media (max-width:860px){ .code-cols{grid-template-columns:minmax(0,1fr);} }
+    .code-card{border-radius:14px; border:1px solid var(--line); background:var(--bg-card); padding:1.1rem 1.2rem; transition:border-color .3s, box-shadow .3s; min-width:0;}
+    .code-card pre{white-space:pre-wrap; word-break:break-word; overflow-x:hidden;}
+    .code-card h3{font-family:var(--display); font-size:.95rem; margin-bottom:.7rem; display:flex; align-items:center; gap:.5rem;}
+    .code-card.active-bug{border-color:rgba(255,107,107,.6); box-shadow:0 0 0 1px rgba(255,107,107,.15);}
+    .code-card.active-fix{border-color:rgba(74,222,128,.6); box-shadow:0 0 0 1px rgba(74,222,128,.15);}
+
+    .phone-stage{display:flex; justify-content:center;}
+    .phone{
+      width:280px; background:#0b0b10; border:1px solid var(--line);
+      border-radius:32px; padding:10px; box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+    }
+    .phone .screen{
+      background:#F4F5F8; border-radius:24px; min-height:420px; position:relative;
+      overflow:hidden; color:#1A1A2E;
+    }
+    .mp-statusbar{display:flex; justify-content:space-between; padding:.5rem .9rem .1rem; font-size:.62rem; font-weight:700; color:#1A1A2E;}
+    .mp-header{
+      padding:1rem 1rem 1.2rem; display:flex; align-items:center; gap:.7rem; color:#fff;
+      background:linear-gradient(135deg, var(--tdc-green), #027a3a);
+    }
+    .mp-check{
+      width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.22);
+      display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;
+    }
+    .mp-header strong{display:block; font-size:.85rem; font-family:var(--display);}
+    .mp-header span{font-size:.66rem; opacity:.85;}
+    .mp-body{padding:.85rem; display:flex; flex-direction:column; gap:.55rem;}
+    .mp-card{
+      background:#fff; border-radius:12px; padding:.75rem .85rem; box-shadow:0 1px 4px rgba(20,20,40,.08);
+      opacity:0; transform:translateY(6px); transition:opacity .35s ease, transform .35s ease;
+      display:flex; gap:.65rem; align-items:flex-start;
+    }
+    .mp-card.show{opacity:1; transform:translateY(0);}
+    .mp-card .ic{font-size:1.05rem; flex-shrink:0; margin-top:.05rem;}
+    .mp-card h4{font-size:.76rem; margin-bottom:.15rem; color:#1A1A2E; font-family:var(--display);}
+    .mp-card p{font-size:.66rem; color:#6B6B7D; line-height:1.4;}
+    .mp-card.notice{background:#EBF3FF; border:1px solid #C7DCFB;}
+    .mp-card.notice h4{color:var(--tdc-blue);}
+    .mp-cta{
+      margin-top:.15rem; background:var(--tdc-orange); color:#fff; text-align:center; font-size:.72rem;
+      font-family:var(--display); font-weight:600; padding:.55rem; border-radius:9px;
+      opacity:0; transition:opacity .35s ease;
+    }
+    .mp-cta.show{opacity:1;}
+    .screen-empty{display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.6rem; color:#6B6B7D; font-family:var(--mono); font-size:.7rem; text-align:center; padding:2.4rem 1.4rem;}
+    .spinner{width:26px; height:26px; border-radius:50%; border:3px solid #DADCE3; border-top-color:var(--red); animation:spin 1s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    footer{margin-top:3rem; color:var(--muted); font-family:var(--mono); font-size:.78rem; text-align:center;}
+    a.back{color:var(--violet-light); text-decoration:none;}
+    a.back:hover{text-decoration:underline;}
+
+    @media (max-width: 700px){
+      .wrap{padding:3.4rem 1.2rem 3rem;}
+      h1{font-size:clamp(1.4rem,7vw,2rem);}
+      .sub{font-size:.92rem;}
+      .controls{padding:1rem; gap:.7rem;}
+      button{font-size:.8rem; padding:.65rem 1rem; flex:1 1 auto; justify-content:center;}
+      .btn-reset{margin-left:0; flex:1 1 100%;}
+      .zip-flow{gap:.8rem;}
+      .src-box{width:118px; padding:.7rem .6rem;}
+      .zip-diagram{width:calc(3*118px + 2*0.8rem);}
+      .zip-node{width:118px; font-size:.75rem; padding:.8rem;}
+      .zip-arrow{font-size:1.3rem;}
+      section{margin-top:2rem;}
+      pre{font-size:.76rem; padding:.9rem 1rem;}
+      .phone{width:min(240px, 74vw);}
+      .phone .screen{min-height:360px;}
+    }
+
+    @media (max-width: 420px){
+      .src-box{width:100%;}
+      .zip-diagram{width:100%;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="tdc-stripe"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Demo interativa · roda 100% no navegador, sem backend</div>
+    <h1>O perigo oculto do Mono.zip()</h1>
+    <p class="sub">
+      Simulação do fan-out reativo que monta a tela de "Parabéns pela compra": 7 fontes de dados são
+      buscadas em paralelo com <code>Mono.zip()</code>. Uma delas — o card <b>"Meus Direitos"</b> — só existe
+      para categorias regulamentadas. Rode os três cenários abaixo e veja o efeito cascata na prática.
+    </p>
+  </header>
+
+  <div class="controls">
+    <button class="btn-bug" id="btn-bug">▶ Rodar com bug — Mono.empty()</button>
+    <button class="btn-fix" id="btn-fix">▶ Rodar com fix — card não aparece</button>
+    <button class="btn-fix-content" id="btn-fix-content">▶ Rodar com fix — card aparece</button>
+    <button class="btn-reset" id="btn-reset">↺ Resetar</button>
+  </div>
+
+  <div class="banner" id="banner">Escolha um cenário para começar.</div>
+
+  <section>
+    <h2>1. Fan-out paralelo — Mono.zip() com 7 fontes</h2>
+    <div class="zip-flow" style="margin-top:1.1rem;">
+      <div class="zip-diagram" id="zip-diagram"></div>
+      <div class="zip-arrow">→</div>
+      <div class="zip-node" id="zip-node">Mono.zip()<br><span style="font-size:.7rem; opacity:.75;">aguardando…</span></div>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div>
+      <div class="section-header">
+        <h2>2. JSON emitido pelo Middleend (SDUI)</h2>
+        <span class="tag" id="json-tag"></span>
+      </div>
+      <div class="json-panel">
+        <pre id="json-out"><span class="com">// O JSON final enviado para a tela aparecerá aqui após a execução do zip().</span></pre>
+      </div>
+    </div>
+    <div>
+      <div class="section-header">
+        <h2>3. Tela renderizada (Smartphone)</h2>
+      </div>
+      <div class="phone-stage">
+        <div class="phone">
+          <div class="screen" id="screen">
+            <div class="screen-empty">
+              <span>Aguardando execução…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 style="margin-bottom:1.1rem;">4. Onde a diferença acontece no código</h2>
+    <div class="code-cols">
+      <div class="code-card" id="card-bug">
+        <h3><span style="color:var(--red);">⚠️</span> Com o Bug (Mono.empty)</h3>
+        <pre><span class="kw">public</span> Mono&lt;RightsCard&gt; getCard(String id) {
+  <span class="kw">return</span> client.fetch(id)
+    .<span class="tok">onErrorResume</span>(ex -&gt; <span class="kw">Mono</span>.empty());
+}</pre>
+      </div>
+      <div class="code-card" id="card-fix">
+        <h3><span style="color:var(--green);">✅</span> Com o Fix (Mono.just com objeto)</h3>
+        <pre><span class="kw">public</span> Mono&lt;RightsCard&gt; getCard(String id) {
+  <span class="kw">return</span> client.fetch(id)
+    .<span class="tok">onErrorResume</span>(ex -&gt;
+       <span class="kw">Mono</span>.just(RightsCard.empty()));
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Demo construída para a palestra "Uma feature, quatro microsserviços" · TDC São Paulo 2026 ·
+    <a class="back" style="color: var(--lime)" href="./index.html">← voltar para os slides</a>
+  </footer>
+</div>
+
+<script>
+  const sources = [
+    { id: 'rec', name: 'Recomendações', icon: '🛍️', time: 180 },
+    { id: 'ship', name: 'Acompanhamento', icon: '🚚', time: 220 },
+    { id: 'pts', name: 'Pontos Fidelidade', icon: '⭐', time: 140 },
+    { id: 'up', name: 'Upsell / Ofertas', icon: '🏷️', time: 260 },
+    { id: 'rev', name: 'Avaliação', icon: '💬', time: 190 },
+    { id: 'share', name: 'Compartilhar', icon: '🔗', time: 110 },
+    { id: 'rights', name: 'Meus Direitos', icon: '📄', time: 300, isTarget: true }
+  ];
+
+  function renderSourceBoxes() {
+    const container = document.getElementById('zip-diagram');
+    container.innerHTML = sources.map(s => `
+      <div class="src-box ${s.isTarget ? 'rights' : ''}" id="src-${s.id}" data-state="idle">
+        <div class="name">${s.icon} ${s.name}</div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+      </div>
+    `).join('');
+  }
+  renderSourceBoxes();
+
+  const btnBug = document.getElementById('btn-bug');
+  const btnFix = document.getElementById('btn-fix');
+  const btnFixContent = document.getElementById('btn-fix-content');
+  const btnReset = document.getElementById('btn-reset');
+
+  const banner = document.getElementById('banner');
+  const zipNode = document.getElementById('zip-node');
+  const jsonOut = document.getElementById('json-out');
+  const jsonTag = document.getElementById('json-tag');
+  const screen = document.getElementById('screen');
+
+  const cardBug = document.getElementById('card-bug');
+  const cardFix = document.getElementById('card-fix');
+
+  function resetState() {
+    sources.forEach(s => {
+      const el = document.getElementById(`src-${s.id}`);
+      el.setAttribute('data-state', 'idle');
+      el.querySelector('.st-text').textContent = 'Aguardando';
+    });
+    banner.className = 'banner';
+    banner.textContent = 'Escolha um cenário para começar.';
+    zipNode.style.background = 'linear-gradient(155deg, var(--violet-mid), var(--violet-deep))';
+    zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem; opacity:.75;">aguardando…</span>';
+    jsonOut.innerHTML = '<span class="com">// O JSON final enviado para a tela aparecerá aqui após a execução do zip().</span>';
+    jsonTag.className = 'tag';
+    jsonTag.textContent = '';
+    screen.innerHTML = '<div class="screen-empty"><span>Aguardando execução…</span></div>';
+    cardBug.className = 'code-card';
+    cardFix.className = 'code-card';
+    setButtonsDisabled(false);
+  }
+
+  function setButtonsDisabled(disabled) {
+    btnBug.disabled = disabled;
+    btnFix.disabled = disabled;
+    btnFixContent.disabled = disabled;
+  }
+
+  function runScenario(mode) {
+    resetState();
+    setButtonsDisabled(true);
+
+    if (mode === 'bug') {
+      cardBug.classList.add('active-bug');
+      banner.className = 'banner bug';
+      banner.textContent = 'Executando: Simulando erro em "Meus Direitos" com Mono.empty()...';
+    } else {
+      cardFix.classList.add('active-fix');
+      banner.className = 'banner fix';
+      banner.textContent = mode === 'fix-empty'
+        ? 'Executando: "Meus Direitos" sem conteúdo, retornando objeto vazio.'
+        : 'Executando: "Meus Direitos" com conteúdo regulamentado.';
+    }
+
+    screen.innerHTML = '<div class="screen-empty"><div class="spinner"></div><span>Carregando tela…</span></div>';
+
+    sources.forEach(s => {
+      const el = document.getElementById(`src-${s.id}`);
+      el.setAttribute('data-state', 'loading');
+      el.querySelector('.st-text').textContent = 'Buscando...';
+    });
+
+    let completed = 0;
+    let hasCancelled = false;
+
+    sources.forEach(s => {
+      setTimeout(() => {
+        if (hasCancelled) return;
+
+        const el = document.getElementById(`src-${s.id}`);
+        if (s.isTarget && mode === 'bug') {
+          hasCancelled = true;
+          el.setAttribute('data-state', 'cancelled');
+          el.querySelector('.st-text').textContent = 'Mono.empty()';
+
+          sources.forEach(other => {
+            if (other.id !== s.id) {
+              const otherEl = document.getElementById(`src-${other.id}`);
+              otherEl.setAttribute('data-state', 'cancelled');
+              otherEl.querySelector('.st-text').textContent = 'Cancelado';
+            }
+          });
+
+          zipNode.style.background = 'rgba(255,107,107,.8)';
+          zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem;">CANCELADO</span>';
+          banner.className = 'banner bug';
+          banner.textContent = '❌ FALHA: Mono.empty() cancelou a emissão do zip()! A resposta da tela foi interrompida.';
+
+          jsonTag.className = 'tag bug show';
+          jsonTag.textContent = '500 ERROR / CANCELADO';
+          jsonOut.innerHTML = `<span class="com">// Mono.empty() fez o zip() cancelar os outros 6 Monos.</span>\n<span class="tok">{</span>\n  <span class="str">"error"</span>: <span class="str">"Subscription cancelled by Mono.empty()"</span>\n<span class="tok">}</span>`;
+
+          screen.innerHTML = `
+            <div class="screen-empty" style="color:var(--red);">
+              <span style="font-size:1.5rem;">⚠️</span>
+              <span>Erro ao carregar o pedido.</span>
+            </div>
+          `;
+          setButtonsDisabled(false);
+        } else {
+          completed++;
+          if (s.isTarget && mode === 'fix-empty') {
+            el.setAttribute('data-state', 'fallback');
+            el.querySelector('.st-text').textContent = 'Objeto Vazio';
+          } else {
+            el.setAttribute('data-state', 'done');
+            el.querySelector('.st-text').textContent = 'OK';
+          }
+
+          if (completed === sources.length) {
+            zipNode.style.background = 'rgba(74,222,128,.8)';
+            zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem;">SUCESSO</span>';
+            banner.className = 'banner fix';
+            banner.textContent = '✅ SUCESSO: Todas as fontes responderam e a tela foi montada via Server-Driven UI!';
+
+            renderSuccessUI(mode === 'fix-content');
+            setButtonsDisabled(false);
+          }
+        }
+      }, s.time);
+    });
+  }
+
+  function renderSuccessUI(hasRightsCard) {
+    jsonTag.className = 'tag fix show';
+    jsonTag.textContent = '200 OK — BRICKS JSON';
+
+    const bricks = [
+      { type: "shipping", title: "Acompanhe seu pedido", body: "Chega em até 3 dias úteis.", icon: "🚚" },
+      { type: "related", title: "Produtos relacionados", body: "3 itens que combinam com sua compra.", icon: "🛍️" }
+    ];
+
+    if (hasRightsCard) {
+      bricks.push({
+        type: "notice",
+        title: "Meus Direitos",
+        body: 'Este produto tem prazo de troca estendido. <a href="#" style="display: block; margin-top: 4px; color: #0066cc; text-decoration: underline; font-weight: 600; cursor: default;" onclick="return false;">Saiba como usar</a>',
+        icon: "📄"
+      });
+    }
+
+    const jsonObj = {
+      page: "congrats",
+      status: "success",
+      bricks: bricks
+    };
+
+    jsonOut.innerHTML = syntaxHighlight(JSON.stringify(jsonObj, null, 2));
+
+    screen.innerHTML = `
+      <div class="mp-statusbar">
+        <span>9:41</span><span>●●● 100%</span>
+      </div>
+      <div class="mp-header">
+        <div class="mp-check">✓</div>
+        <div>
+          <strong>Compra realizada!</strong><span>Pedido #48213</span>
+        </div>
+      </div>
+      <div class="mp-body">
+        <div class="mp-card" id="card-ship">
+          <span class="ic">🚚</span>
+          <div>
+            <h4>Acompanhe seu pedido</h4>
+            <p>Chega em até 3 dias úteis.</p>
+          </div>
+        </div>
+        <div class="mp-card" id="card-rel">
+          <span class="ic">🛍️</span>
+          <div>
+            <h4>Produtos relacionados</h4>
+            <p>3 itens que combinam com sua compra.</p>
+          </div>
+        </div>
+        ${hasRightsCard ? `
+        <div class="mp-card notice" id="card-notice">
+          <span class="ic">📄</span>
+          <div>
+            <h4>Meus Direitos</h4>
+            <p>Este produto tem prazo de troca estendido. <a href="#" style="display: block; margin-top: 4px; color: #0066cc; text-decoration: underline; font-weight: 600; cursor: default;" onclick="return false;">Saiba como usar</a></p>
+          </div>
+        </div>
+        ` : ''}
+        <div class="mp-cta" id="cta-btn">Acompanhar pedido</div>
+      </div>
+    `;
+
+    setTimeout(() => document.getElementById('card-ship')?.classList.add('show'), 50);
+    setTimeout(() => document.getElementById('card-rel')?.classList.add('show'), 150);
+    if (hasRightsCard) {
+      setTimeout(() => document.getElementById('card-notice')?.classList.add('show'), 250);
+    }
+    setTimeout(() => document.getElementById('cta-btn')?.classList.add('show'), 350);
+  }
+
+  function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      var cls = 'tok';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'kw';
+        } else {
+          cls = 'str';
+        }
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+    });
+  }
+
+  btnBug.addEventListener('click', () => runScenario('bug'));
+  btnFix.addEventListener('click', () => runScenario('fix-empty'));
+  btnFixContent.addEventListener('click', () => runScenario('fix-content'));
+  btnReset.addEventListener('click', resetState);
+</script>
+</body>
+</html>
