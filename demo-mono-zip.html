@@ -1,4 +1,4 @@
-<html lang="pt-BR"><head>
+m<html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo — Mono.zip() &amp; Server-Driven UI · TDC São Paulo 2026</title>
@@ -278,7 +278,7 @@
         <button class="btn-reset" id="btn-reset">↺ Resetar</button>
     </div>
 
-    <div class="banner fix" id="banner">✅ SUCESSO: Todas as fontes responderam e a tela foi montada via Server-Driven UI!</div>
+    <div class="banner" id="banner">Escolha um cenário para começar.</div>
 
     <section>
         <h2>1. Fan-out paralelo — Mono.zip() com 7 fontes</h2>
@@ -287,43 +287,43 @@
         </p>
         <div class="zip-flow" style="margin-top:1.1rem;">
             <div class="zip-diagram" id="zip-diagram">
-      <div class="src-box " id="src-rec" data-state="done">
+      <div class="src-box " id="src-rec" data-state="idle">
         <div class="name">🛍️<br> Recomendações</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     
-      <div class="src-box " id="src-ship" data-state="done">
+      <div class="src-box " id="src-ship" data-state="idle">
         <div class="name">🚚 Acompanhamento</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     
-      <div class="src-box " id="src-pts" data-state="done">
+      <div class="src-box " id="src-pts" data-state="idle">
         <div class="name">⭐ Pontos Fidelidade</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     
-      <div class="src-box " id="src-up" data-state="done">
+      <div class="src-box " id="src-up" data-state="idle">
         <div class="name">🏷️<br> Upsell / Ofertas</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     
-      <div class="src-box " id="src-rev" data-state="done">
+      <div class="src-box " id="src-rev" data-state="idle">
         <div class="name">💬 Avaliação</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     
-      <div class="src-box " id="src-share" data-state="done">
+      <div class="src-box " id="src-share" data-state="idle">
         <div class="name">🔗 Compartilhar</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     
-      <div class="src-box rights" id="src-rights" data-state="done">
+      <div class="src-box rights" id="src-rights" data-state="idle">
         <div class="name">📄 Meus Direitos</div>
-        <div class="status"><span class="dot"></span><span class="st-text">OK</span></div>
+        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
       </div>
     </div>
             <div class="zip-arrow">→</div>
-            <div class="zip-node" id="zip-node" style="background: rgba(74, 222, 128, 0.8);">Mono.zip()<br><span style="font-size:.7rem;">SUCESSO</span></div>
+            <div class="zip-node" id="zip-node" style="background: linear-gradient(155deg, #ee56af, var(--violet-deep));">Mono.zip()<br><span style="font-size:.7rem; opacity:.75;">aguardando…</span></div>
         </div>
     </section>
 
@@ -331,33 +331,10 @@
         <div>
             <div class="section-header">
                 <h2>2. JSON emitido pelo Middleend (SDUI)</h2>
-                <span class="tag fix show" id="json-tag">200 OK — BRICKS JSON</span>
+                <span class="tag" id="json-tag"></span>
             </div>
             <div class="json-panel">
-                <pre id="json-out">{
-  <span class="kw">"page":</span> <span class="str">"congrats"</span>,
-  <span class="kw">"status":</span> <span class="str">"success"</span>,
-  <span class="kw">"bricks":</span> [
-    {
-      <span class="kw">"type":</span> <span class="str">"shipping"</span>,
-      <span class="kw">"title":</span> <span class="str">"Acompanhe seu pedido"</span>,
-      <span class="kw">"body":</span> <span class="str">"Chega em até 3 dias úteis."</span>,
-      <span class="kw">"icon":</span> <span class="str">"🚚"</span>
-    },
-    {
-      <span class="kw">"type":</span> <span class="str">"related"</span>,
-      <span class="kw">"title":</span> <span class="str">"Produtos relacionados"</span>,
-      <span class="kw">"body":</span> <span class="str">"3 itens que combinam com sua compra."</span>,
-      <span class="kw">"icon":</span> <span class="str">"🛍️"</span>
-    },
-    {
-      <span class="kw">"type":</span> <span class="str">"notice"</span>,
-      <span class="kw">"title":</span> <span class="str">"Meus Direitos"</span>,
-      <span class="kw">"body":</span> <span class="str">"Este produto tem prazo de troca estendido. &lt;a href=\"#\" style=\"display: block; margin-top: 4px; color: #0066cc; text-decoration: underline; font-weight: 600; cursor: default;\" onclick=\"return false;\"&gt;Saiba como usar&lt;/a&gt;"</span>,
-      <span class="kw">"icon":</span> <span class="str">"📄"</span>
-    }
-  ]
-}</pre>
+                <pre id="json-out"><span class="com">// O JSON final enviado para a tela aparecerá aqui após a execução do zip().</span></pre>
             </div>
         </div>
         <div>
@@ -366,43 +343,7 @@
             </div>
             <div class="phone-stage">
                 <div class="phone">
-                    <div class="screen" id="screen">
-      <div class="mp-statusbar">
-        <span>9:41</span><span>●●● 100%</span>
-      </div>
-      <div class="mp-header">
-        <div class="mp-check">✓</div>
-        <div>
-          <strong>Compra realizada!</strong><span>Pedido #48213</span>
-        </div>
-      </div>
-      <div class="mp-body">
-        <div class="mp-card show" id="card-ship">
-          <span class="ic">🚚</span>
-          <div>
-            <h4>Acompanhe seu pedido</h4>
-            <p>Chega em até 3 dias úteis.</p>
-          </div>
-        </div>
-        <div class="mp-card show" id="card-rel">
-          <span class="ic">🛍️</span>
-          <div>
-            <h4>Produtos relacionados</h4>
-            <p>3 itens que combinam com sua compra.</p>
-          </div>
-        </div>
-        
-        <div class="mp-card notice show" id="card-notice">
-          <span class="ic">📄</span>
-          <div>
-            <h4>Meus Direitos</h4>
-            <p>Este produto tem prazo de troca estendido. <a href="#" style="display: block; margin-top: 4px; color: #0066cc; text-decoration: underline; font-weight: 600; cursor: default;" onclick="return false;">Saiba como usar</a></p>
-          </div>
-        </div>
-        
-        <div class="mp-cta show" id="cta-btn">Acompanhar pedido</div>
-      </div>
-    </div>
+                    <div class="screen" id="screen"><div class="screen-empty"><span>Aguardando execução…</span></div></div>
                 </div>
             </div>
         </div>
@@ -418,7 +359,7 @@
     .<span class="tok">onErrorResume</span>(ex -&gt; <span class="kw">Mono</span>.empty());
 }</pre>
             </div>
-            <div class="code-card active-fix" id="card-fix">
+            <div class="code-card" id="card-fix">
                 <h3><span style="color:var(--green);">✅</span> Com o Fix (Mono.just com objeto)</h3>
                 <pre><span class="kw">public</span> Mono&lt;RightsCard&gt; getCard(String id) {
   <span class="kw">return</span> client.fetch(id)
@@ -686,10 +627,10 @@
     btnFix.addEventListener('click', () => runScenario('fix-empty'));
     btnFixContent.addEventListener('click', () => runScenario('fix-content'));
     btnReset.addEventListener('click', resetState);
-    
-// Insira a inicialização limpa:
-resetState();
 
+    // Initial state reset on load
+    document.addEventListener('DOMContentLoaded', resetState);
+    resetState();
 </script>
 
 
