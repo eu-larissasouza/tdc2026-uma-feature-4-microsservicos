@@ -1,4 +1,4 @@
-m<html lang="pt-BR"><head>
+<html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo — Mono.zip() &amp; Server-Driven UI · TDC São Paulo 2026</title>
@@ -479,58 +479,58 @@ m<html lang="pt-BR"><head>
         scheduleExecution(() => {
             sources.forEach(s => {
                 scheduleExecution(() => {
-                if (hasCancelled) return;
+                    if (hasCancelled) return;
 
-                const el = document.getElementById(`src-${s.id}`);
-                if (s.isTarget && mode === 'bug') {
-                    hasCancelled = true;
-                    el.setAttribute('data-state', 'cancelled');
-                    el.querySelector('.st-text').textContent = 'Mono.empty()';
+                    const el = document.getElementById(`src-${s.id}`);
+                    if (s.isTarget && mode === 'bug') {
+                        hasCancelled = true;
+                        el.setAttribute('data-state', 'cancelled');
+                        el.querySelector('.st-text').textContent = 'Mono.empty()';
 
-                    sources.forEach(other => {
-                        if (other.id !== s.id) {
-                            const otherEl = document.getElementById(`src-${other.id}`);
-                            otherEl.setAttribute('data-state', 'cancelled');
-                            otherEl.querySelector('.st-text').textContent = 'Cancelado';
-                        }
-                    });
+                        sources.forEach(other => {
+                            if (other.id !== s.id) {
+                                const otherEl = document.getElementById(`src-${other.id}`);
+                                otherEl.setAttribute('data-state', 'cancelled');
+                                otherEl.querySelector('.st-text').textContent = 'Cancelado';
+                            }
+                        });
 
-                    zipNode.style.background = 'rgba(255,107,107,.8)';
-                    zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem;">CANCELADO</span>';
-                    banner.className = 'banner bug';
-                    banner.textContent = '❌ FALHA: Mono.empty() cancelou a emissão do zip()! A resposta da tela foi interrompida.';
+                        zipNode.style.background = 'rgba(255,107,107,.8)';
+                        zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem;">CANCELADO</span>';
+                        banner.className = 'banner bug';
+                        banner.textContent = '❌ FALHA: Mono.empty() cancelou a emissão do zip()! A resposta da tela foi interrompida.';
 
-                    jsonTag.className = 'tag bug show';
-                    jsonTag.textContent = '500 ERROR / CANCELADO';
-                    jsonOut.innerHTML = `<span class="com">// Mono.empty() fez o zip() cancelar os outros 6 Monos.</span>\n<span class="tok">{</span>\n  <span class="str">"error"</span>: <span class="str">"Subscription cancelled by Mono.empty()"</span>\n<span class="tok">}</span>`;
+                        jsonTag.className = 'tag bug show';
+                        jsonTag.textContent = '500 ERROR / CANCELADO';
+                        jsonOut.innerHTML = `<span class="com">// Mono.empty() fez o zip() cancelar os outros 6 Monos.</span>\n<span class="tok">{</span>\n  <span class="str">"error"</span>: <span class="str">"Subscription cancelled by Mono.empty()"</span>\n<span class="tok">}</span>`;
 
-                    screen.innerHTML = `
+                        screen.innerHTML = `
             <div class="screen-empty" style="color:var(--red);">
               <span style="font-size:1.5rem;">⚠️</span>
               <span>Erro ao carregar o pedido.</span>
             </div>
           `;
-                    setButtonsDisabled(false);
-                } else {
-                    completed++;
-                    if (s.isTarget && mode === 'fix-empty') {
-                        el.setAttribute('data-state', 'fallback');
-                        el.querySelector('.st-text').textContent = 'Objeto Vazio';
-                    } else {
-                        el.setAttribute('data-state', 'done');
-                        el.querySelector('.st-text').textContent = 'OK';
-                    }
-
-                    if (completed === sources.length) {
-                        zipNode.style.background = 'rgba(74,222,128,.8)';
-                        zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem;">SUCESSO</span>';
-                        banner.className = 'banner fix';
-                        banner.textContent = '✅ SUCESSO: Todas as fontes responderam e a tela foi montada via Server-Driven UI!';
-
-                        renderSuccessUI(mode === 'fix-content');
                         setButtonsDisabled(false);
+                    } else {
+                        completed++;
+                        if (s.isTarget && mode === 'fix-empty') {
+                            el.setAttribute('data-state', 'fallback');
+                            el.querySelector('.st-text').textContent = 'Objeto Vazio';
+                        } else {
+                            el.setAttribute('data-state', 'done');
+                            el.querySelector('.st-text').textContent = 'OK';
+                        }
+
+                        if (completed === sources.length) {
+                            zipNode.style.background = 'rgba(74,222,128,.8)';
+                            zipNode.innerHTML = 'Mono.zip()<br><span style="font-size:.7rem;">SUCESSO</span>';
+                            banner.className = 'banner fix';
+                            banner.textContent = '✅ SUCESSO: Todas as fontes responderam e a tela foi montada via Server-Driven UI!';
+
+                            renderSuccessUI(mode === 'fix-content');
+                            setButtonsDisabled(false);
+                        }
                     }
-                }
                 }, s.time);
             });
         }, EXECUTION_HOLD_MS);
@@ -632,6 +632,7 @@ m<html lang="pt-BR"><head>
     document.addEventListener('DOMContentLoaded', resetState);
     resetState();
 </script>
+
 
 
 </body></html>
