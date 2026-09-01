@@ -1,967 +1,1229 @@
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uma feature, quatro microsserviços — TDC São Paulo 2026</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-      :root {
-        --bg: #101018;
-        --bg-raised: #1b1b27;
-        --bg-card: #201f2e;
-        --violet: #8b5cf6;
-        --violet-dim: #5b4699;
-        --violet-deep: #290b5e;
-        --violet-mid: #6c35d9;
-        --violet-light: #c9b6f5;
-        --lime: #c6ff3d;
-        --text: #f4f2fa;
-        --muted: #8d8aa0;
-        --line: #2e2c3e;
-        --red: #ff6b6b;
-        --green: #4ade80;
-        --display: 'Space Grotesk', sans-serif;
-        --body: 'Inter', sans-serif;
-        --mono: 'JetBrains Mono', monospace;
+        :root {
+            --bg: #101018;
+            --bg-raised: #1b1b27;
+            --bg-card: #201f2e;
+            --violet: #8b5cf6;
+            --violet-dim: #5b4699;
+            --violet-deep: #290b5e;
+            --violet-mid: #6c35d9;
+            --violet-light: #c9b6f5;
+            --lime: #c6ff3d;
+            --text: #f4f2fa;
+            --muted: #8d8aa0;
+            --line: #2e2c3e;
+            --red: #ff6b6b;
+            --green: #4ade80;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'Inter', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
 
-        /* Cores oficiais do TDC (extraídas do site) — usadas como tempero, não como base */
-        --tdc-red: #c22821;
-        --tdc-orange: #e35100;
-        --tdc-yellow: #fcb045;
-        --tdc-green: #019a2e;
-        --tdc-darkgreen: #0a6b34;
-        --tdc-blue: #004e91;
-        --tdc-blue-light: #6fb3ff;
-        --tdc-darkblue: #02264a;
-        --tdc-violet: #833ab4;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        height: 100%;
-      }
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--body);
-        overflow: hidden;
-        -webkit-font-smoothing: antialiased;
-      }
-      .deck {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-      }
-      .slide {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 6vh 9vw 12vh 9vw;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(14px);
-        transition:
-          opacity 0.45s ease,
-          transform 0.45s ease;
-      }
-      .slide.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-      }
-
-      /* Faixa de identidade visual do TDC — presente em todas as páginas da
-     apresentação. O resto da apresentação usa as cores do TDC em detalhes
-     pontuais (pontos de eyebrow, bordas de card). */
-      .tdc-stripe {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        display: flex;
-        z-index: 60;
-      }
-      .tdc-stripe span {
-        flex: 1;
-      }
-      .tdc-stripe span:nth-child(1) {
-        background: var(--tdc-red);
-      }
-      .tdc-stripe span:nth-child(2) {
-        background: var(--tdc-orange);
-      }
-      .tdc-stripe span:nth-child(3) {
-        background: var(--tdc-yellow);
-      }
-      .tdc-stripe span:nth-child(4) {
-        background: var(--tdc-green);
-      }
-      .tdc-stripe span:nth-child(5) {
-        background: var(--tdc-darkgreen);
-      }
-      .tdc-stripe span:nth-child(6) {
-        background: var(--tdc-blue);
-      }
-      .tdc-stripe span:nth-child(7) {
-        background: var(--tdc-darkblue);
-      }
-      .tdc-stripe span:nth-child(8) {
-        background: var(--tdc-violet);
-      }
-
-      .trilha-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-family: var(--mono);
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--tdc-blue-light);
-        background: rgba(0, 78, 145, 0.16);
-        border: 1px solid rgba(111, 179, 255, 0.4);
-        padding: 0.3rem 0.7rem;
-        border-radius: 20px;
-      }
-      .trilha-chip::before {
-        content: '●';
-        color: var(--tdc-blue-light);
-        font-size: 0.6rem;
-      }
-
-      .eyebrow {
-        font-family: var(--mono);
-        font-size: 0.8rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--lime);
-        margin-bottom: 1.1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-      .eyebrow::before {
-        content: '●';
-        font-size: 0.6rem;
-        color: var(--violet);
-      }
-      .eyebrow.no-dot::before {
-        content: none;
-      }
-      /* Cores do TDC "abusadas" em detalhes pontuais — o ponto do eyebrow muda de
-     cor por bloco temático da palestra, funcionando como sinalização visual. */
-      .eyebrow.c-red::before {
-        color: var(--tdc-red);
-      }
-      .eyebrow.c-orange::before {
-        color: var(--tdc-orange);
-      }
-      .eyebrow.c-yellow::before {
-        color: var(--tdc-yellow);
-      }
-      .eyebrow.c-green::before {
-        color: var(--tdc-green);
-      }
-      .eyebrow.c-darkgreen::before {
-        color: var(--tdc-darkgreen);
-      }
-      .eyebrow.c-blue::before {
-        color: var(--tdc-blue-light);
-      }
-      .eyebrow.c-darkblue::before {
-        color: var(--tdc-blue-light);
-      }
-      .eyebrow.c-tdcviolet::before {
-        color: var(--tdc-violet);
-      }
-      h1 {
-        font-family: var(--display);
-        font-weight: 700;
-        font-size: clamp(2.1rem, 4.6vw, 4rem);
-        line-height: 1.05;
-        letter-spacing: -0.01em;
-      }
-      h2 {
-        font-family: var(--display);
-        font-weight: 600;
-        font-size: clamp(1.6rem, 3vw, 2.5rem);
-        line-height: 1.15;
-      }
-      .sub {
-        color: var(--muted);
-        font-size: clamp(1rem, 1.4vw, 1.25rem);
-        margin-top: 1rem;
-        max-width: 100%;
-        line-height: 1.55;
-      }
-      .kicker {
-        font-family: var(--mono);
-        color: var(--violet);
-        font-size: 0.95rem;
-      }
-      .go-demo:link{
-       text-decoration: none;
-      }
-      .go-demo:visited {
-        text-decoration: none;
-      }
-
-      .go-demo:hover {
-        text-decoration: underline;
-      }
-
-      .go-demo:active {
-        text-decoration: underline;
-      }
-
-      .grid {
-        display: grid;
-        gap: 1.4rem;
-        margin-top: 2rem;
-      }
-      .cols-2 {
-        grid-template-columns: 1fr 1fr;
-      }
-      .cols-3 {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1.3rem 1.5rem;
-      }
-      .card h3 {
-        font-family: var(--display);
-        font-size: 1.02rem;
-        margin-bottom: 0.5rem;
-        color: var(--text);
-      }
-      .card p {
-        color: var(--muted);
-        font-size: 0.9rem;
-        line-height: 1.55;
-      }
-      .card.tdc-blue {
-        border-color: rgba(0, 78, 145, 0.5);
-        box-shadow: 0 0 0 1px rgba(0, 78, 145, 0.08) inset;
-      }
-      .card.c-red,
-      .concept-card.c-red {
-        border-top: 3px solid var(--tdc-red);
-      }
-      .card.c-orange,
-      .concept-card.c-orange {
-        border-top: 3px solid var(--tdc-orange);
-      }
-      .card.c-yellow,
-      .concept-card.c-yellow {
-        border-top: 3px solid var(--tdc-yellow);
-      }
-      .card.c-green,
-      .concept-card.c-green {
-        border-top: 3px solid var(--tdc-green);
-      }
-      .card.c-darkgreen,
-      .concept-card.c-darkgreen {
-        border-top: 3px solid var(--tdc-darkgreen);
-      }
-      .card.c-blue,
-      .concept-card.c-blue {
-        border-top: 3px solid var(--tdc-blue);
-      }
-      .card.c-darkblue,
-      .concept-card.c-darkblue {
-        border-top: 3px solid var(--tdc-darkblue);
-      }
-      .card.c-tdcviolet,
-      .concept-card.c-tdcviolet {
-        border-top: 3px solid var(--tdc-violet);
-      }
-
-      code,
-      pre {
-        font-family: var(--mono);
-      }
-      pre {
-        background: #0b0b12;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 1rem 1.2rem;
-        font-size: 0.82rem;
-        line-height: 1.55;
-        overflow: auto;
-        color: #dad6f0;
-        max-height: 48vh;
-      }
-      .tok {
-        color: var(--lime);
-      }
-      .str {
-        color: #f5c97b;
-      }
-      .com {
-        color: #5f5c74;
-        font-style: italic;
-      }
-      .kw {
-        color: var(--violet);
-      }
-
-      .badge {
-        display: inline-block;
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        padding: 0.2rem 0.55rem;
-        border-radius: 6px;
-        letter-spacing: 0.04em;
-      }
-      .badge.bug {
-        background: rgba(255, 107, 107, 0.15);
-        color: var(--red);
-        border: 1px solid rgba(255, 107, 107, 0.35);
-      }
-      .badge.fix {
-        background: rgba(74, 222, 128, 0.15);
-        color: var(--green);
-        border: 1px solid rgba(74, 222, 128, 0.35);
-      }
-
-      /* Phone mockup — estilo de app de marketplace real (tela clara, header de
-     confirmação, cards com sombra), igual ao usado na demo interativa */
-      .phone-row {
-        display: flex;
-        gap: 2.2rem;
-        align-items: flex-start;
-        margin-top: 1.3rem;
-      }
-      .phone {
-        width: 250px;
-        background: #0b0b10;
-        border: 1px solid var(--line);
-        border-radius: 30px;
-        padding: 10px;
-        flex-shrink: 0;
-        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
-      }
-      .phone .screen {
-        background: #f4f5f8;
-        border-radius: 22px;
-        min-height: 400px;
-        overflow: hidden;
-        color: #1a1a2e;
-      }
-      .mp-statusbar {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 0.85rem 0.1rem;
-        font-size: 0.6rem;
-        font-weight: 700;
-        color: #1a1a2e;
-      }
-      .mp-header {
-        padding: 0.9rem 0.9rem 1.1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        color: #fff;
-        background: linear-gradient(135deg, var(--tdc-green), #027a3a);
-      }
-      .mp-check {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.22);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.95rem;
-        flex-shrink: 0;
-      }
-      .mp-header strong {
-        display: block;
-        font-size: 0.8rem;
-        font-family: var(--display);
-      }
-      .mp-header span {
-        font-size: 0.64rem;
-        opacity: 0.85;
-      }
-      .mp-body {
-        padding: 0.8rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .mp-card {
-        background: #fff;
-        border-radius: 11px;
-        padding: 0.7rem 0.8rem;
-        box-shadow: 0 1px 4px rgba(20, 20, 40, 0.08);
-        display: flex;
-        gap: 0.6rem;
-        align-items: flex-start;
-      }
-      .mp-card .ic {
-        font-size: 1rem;
-        flex-shrink: 0;
-        margin-top: 0.05rem;
-      }
-      .mp-card h4 {
-        font-size: 0.72rem;
-        margin-bottom: 0.15rem;
-        color: #1a1a2e;
-        font-family: var(--display);
-      }
-      .mp-card p {
-        font-size: 0.63rem;
-        color: #6b6b7d;
-        line-height: 1.4;
-      }
-      .mp-card.notice {
-        background: #ebf3ff;
-        border: 1px solid #c7dcfb;
-      }
-      .mp-card.notice h4 {
-        color: var(--tdc-blue);
-      }
-      .mp-cta {
-        margin-top: 0.1rem;
-        background: var(--tdc-orange);
-        color: #fff;
-        text-align: center;
-        font-size: 0.68rem;
-        font-family: var(--display);
-        font-weight: 600;
-        padding: 0.5rem;
-        border-radius: 8px;
-      }
-
-      .scrubber {
-        position: absolute;
-        left: 9vw;
-        right: 9vw;
-        bottom: 5vh;
-        display: flex;
-        align-items: flex-end;
-        gap: 2px;
-        height: 24px;
-      }
-      .bar {
-        flex: 1;
-        background: var(--line);
-        border-radius: 2px;
-        height: 20%;
-        transition:
-          background 0.3s,
-          height 0.3s;
-      }
-      .bar.played {
-        background: linear-gradient(
-          180deg,
-          var(--violet-light),
-          var(--violet-mid)
-        );
-      }
-      .bar.current {
-        background: var(--lime);
-      }
-
-      .footer-meta {
-        position: absolute;
-        left: 9vw;
-        bottom: calc(5vh + 24px + 1rem);
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        color: var(--muted);
-        letter-spacing: 0.05em;
-      }
-      .nav-hint {
-        position: absolute;
-        right: 9vw;
-        bottom: calc(5vh + 24px + 1rem);
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        color: var(--muted);
-      }
-
-      .num {
-        font-family: var(--mono);
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
-      ul.plain {
-        list-style: none;
-        max-width: 100%;
-      }
-      ul.plain li {
-        position: relative;
-        padding-left: 1.3rem;
-        margin-bottom: 0.55rem;
-        color: var(--text);
-        font-size: 0.98rem;
-        line-height: 1.5;
-      }
-      ul.plain li::before {
-        content: '→';
-        position: absolute;
-        left: 0;
-        color: var(--violet);
-      }
-
-      .big-lesson {
-        font-family: var(--display);
-        font-weight: 600;
-        font-size: clamp(1.6rem, 3.4vw, 2.7rem);
-        line-height: 1.25;
-        max-width: 22ch;
-      }
-      .lesson-num {
-        font-family: var(--mono);
-        color: var(--lime);
-        font-size: 1rem;
-        margin-bottom: 0.8rem;
-      }
-
-      .diagram-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 1.8rem;
-        flex-wrap: wrap;
-      }
-      .node {
-        background: var(--bg-card);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        min-width: 140px;
-        text-align: center;
-        border-top: 2px solid var(--violet-mid);
-      }
-      .node b {
-        display: block;
-        font-family: var(--display);
-        font-size: 0.88rem;
-        margin-bottom: 0.2rem;
-        color: var(--text);
-      }
-      .arrow {
-        color: var(--violet);
-        font-size: 1.2rem;
-      }
-
-      .mermaid-wrap {
-        background: var(--bg-raised);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 1rem 1.4rem;
-        margin-top: 1.1rem;
-        overflow: auto;
-        max-height: 62vh;
-        text-align: center;
-      }
-      .mermaid {
-        font-family: var(--mono) !important;
-      }
-
-      .concept-row {
-        display: flex;
-        gap: 1.6rem;
-        margin-top: 1.6rem;
-        flex-wrap: wrap;
-      }
-      .concept-card {
-        flex: 1;
-        min-width: 240px;
-        background: var(--bg-card);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1.3rem 1.4rem;
-      }
-      .concept-card .icon {
-        font-size: 1.6rem;
-        margin-bottom: 0.6rem;
-        display: block;
-      }
-      .concept-card h3 {
-        font-family: var(--display);
-        font-size: 1.05rem;
-        margin-bottom: 0.5rem;
-      }
-      .concept-card p {
-        color: var(--muted);
-        font-size: 0.88rem;
-        line-height: 1.55;
-      }
-      .concept-card .analogy {
-        margin-top: 0.7rem;
-        font-size: 0.82rem;
-        color: var(--violet-light);
-        font-style: italic;
-      }
-
-      .speaker-notes {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #000;
-        color: var(--lime);
-        font-family: var(--mono);
-        font-size: 0.85rem;
-        padding: 1rem 2rem;
-        max-height: 30vh;
-        overflow: auto;
-        display: none;
-        z-index: 50;
-        border-top: 2px solid var(--violet);
-      }
-      .speaker-notes.show {
-        display: block;
-      }
-      .progress-label {
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        color: var(--muted);
-        position: absolute;
-        right: 9vw;
-        bottom: calc(5vh + 24px + 1rem);
-      }
-
-      .deco-circle {
-        position: absolute;
-        border-radius: 50%;
-        border: 1px solid rgba(201, 182, 245, 0.35);
-        pointer-events: none;
-      }
-      .slide-capa {
-        background:
-          radial-gradient(
-            1100px 760px at 90% -8%,
-            rgba(108, 53, 217, 0.45),
-            transparent 60%
-          ),
-          radial-gradient(
-            700px 500px at 8% 108%,
-            rgba(41, 11, 94, 0.55),
-            transparent 65%
-          ),
-          radial-gradient(
-            500px 400px at 50% 100%,
-            rgba(0, 78, 145, 0.18),
-            transparent 70%
-          ),
-          var(--bg);
-        overflow: hidden;
-      }
-      .slide-capa h1 {
-        background: linear-gradient(
-          115deg,
-          var(--text) 40%,
-          var(--violet-light) 100%
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-      .capa-rule {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 0.4rem;
-      }
-      .capa-rule .line {
-        flex: 1;
-        max-width: 220px;
-        height: 1px;
-        background: linear-gradient(90deg, var(--violet-light), transparent);
-      }
-      .capa-logo {
-        position: absolute;
-        top: 6vh;
-        right: 9vw;
-        height: 56px;
-        opacity: 0.92;
-      }
-
-      /* Slide "Quem sou eu" */
-      .slide-bio {
-        flex-direction: row;
-        padding: 0;
-        overflow: hidden;
-      }
-      .bio-side {
-          width: 32%;
-          min-width: 260px;
-          background: #0a0812;
-          border-right: 1px solid var(--violet-dim);
-          position: relative;
-          display: flex;
-          align-items: flex-end;
-          padding: 3.2rem 1.6rem;
-          overflow: hidden; /* Mantém a imagem presa dentro do painel */
-      }
-      .bio-avatar {
-        position: absolute;
-        inset: 0; /* Ocupa 100% da largura e altura do .bio-side */
-        width: 100%;
-        height: 100%;
-        border-radius: 0; /* Remove os cantos arredondados */
-        background: transparent;
-        box-shadow: none;
-      }
-      .bio-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Preenche todo o espaço sem distorcer */
-        object-position: center top; /* Foca no topo (rosto/corpo) */
-      }
-      .bio-side .rotated {
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        font-family: var(--mono);
-        letter-spacing: 0.18em;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .bio-main {
-        flex: 1;
-        padding: 6vh 6vw 12vh 6vw;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      /* Setas de navegação para toque — escondidas no desktop, onde o clique
-     nas laterais e as setas do teclado já resolvem. */
-      .tap-nav {
-        display: none;
-        position: fixed;
-        bottom: 1.4vh;
-        z-index: 55;
-        width: 46px;
-        height: 46px;
-        border-radius: 50%;
-        background: var(--bg-card);
-        border: 1px solid var(--line);
-        color: var(--text);
-        font-family: var(--display);
-        font-size: 1.3rem;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.5);
-      }
-      .tap-nav.prev {
-        left: 3vw;
-      }
-      .tap-nav.next {
-        right: 3vw;
-      }
-
-      /* ==================== RESPONSIVO — TABLET / CELULAR ==================== */
-      @media (max-width: 860px) {
+            /* Cores oficiais do TDC (extraídas do site) — usadas como tempero, não como base */
+            --tdc-red: #c22821;
+            --tdc-orange: #e35100;
+            --tdc-yellow: #fcb045;
+            --tdc-green: #019a2e;
+            --tdc-darkgreen: #0a6b34;
+            --tdc-blue: #004e91;
+            --tdc-blue-light: #6fb3ff;
+            --tdc-darkblue: #02264a;
+            --tdc-violet: #833ab4;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html,
         body {
-          overflow: auto;
+            height: 100%;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--body);
+            overflow: hidden;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
         .deck {
-          height: auto;
-          min-height: 100vh;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
         }
         .slide {
-          padding: 7.5vh 6vw 9vh 6vw;
-          justify-content: flex-start;
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6vh 9vw calc(12vh + 2.5rem) 9vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(14px);
+            transition:
+                    opacity 0.45s ease,
+                    transform 0.45s ease;
         }
         .slide.active {
-          display: flex;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Faixa de identidade visual do TDC — presente em todas as páginas da
+       apresentação. O resto da apresentação usa as cores do TDC em detalhes
+       pontuais (pontos de eyebrow, bordas de card). */
+        .tdc-stripe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            display: flex;
+            z-index: 60;
+        }
+        .tdc-stripe span {
+            flex: 1;
+        }
+        .tdc-stripe span:nth-child(1) {
+            background: var(--tdc-red);
+        }
+        .tdc-stripe span:nth-child(2) {
+            background: var(--tdc-orange);
+        }
+        .tdc-stripe span:nth-child(3) {
+            background: var(--tdc-yellow);
+        }
+        .tdc-stripe span:nth-child(4) {
+            background: var(--tdc-green);
+        }
+        .tdc-stripe span:nth-child(5) {
+            background: var(--tdc-darkgreen);
+        }
+        .tdc-stripe span:nth-child(6) {
+            background: var(--tdc-blue);
+        }
+        .tdc-stripe span:nth-child(7) {
+            background: var(--tdc-darkblue);
+        }
+        .tdc-stripe span:nth-child(8) {
+            background: var(--tdc-violet);
+        }
+
+        .trilha-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--tdc-blue-light);
+            background: rgba(0, 78, 145, 0.16);
+            border: 1px solid rgba(111, 179, 255, 0.4);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+        }
+        .trilha-chip::before {
+            content: '●';
+            color: var(--tdc-blue-light);
+            font-size: 0.6rem;
+        }
+
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--lime);
+            margin-bottom: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .eyebrow::before {
+            content: '●';
+            font-size: 0.6rem;
+            color: var(--violet);
+        }
+        .eyebrow.no-dot::before {
+            content: none;
+        }
+        /* Cores do TDC "abusadas" em detalhes pontuais — o ponto do eyebrow muda de
+       cor por bloco temático da palestra, funcionando como sinalização visual. */
+        .eyebrow.c-red::before {
+            color: var(--tdc-red);
+        }
+        .eyebrow.c-orange::before {
+            color: var(--tdc-orange);
+        }
+        .eyebrow.c-yellow::before {
+            color: var(--tdc-yellow);
+        }
+        .eyebrow.c-green::before {
+            color: var(--tdc-green);
+        }
+        .eyebrow.c-darkgreen::before {
+            color: var(--tdc-darkgreen);
+        }
+        .eyebrow.c-blue::before {
+            color: var(--tdc-blue-light);
+        }
+        .eyebrow.c-darkblue::before {
+            color: var(--tdc-blue-light);
+        }
+        .eyebrow.c-tdcviolet::before {
+            color: var(--tdc-violet);
         }
         h1 {
-          font-size: clamp(1.6rem, 7.5vw, 2.6rem);
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(2.1rem, 4.6vw, 4rem);
+            line-height: 1.05;
+            letter-spacing: -0.01em;
         }
         h2 {
-          font-size: clamp(1.3rem, 5.8vw, 1.9rem);
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: clamp(1.6rem, 3vw, 2.5rem);
+            line-height: 1.15;
         }
-        .grid.cols-2,
-        .grid.cols-3 {
-          grid-template-columns: 1fr;
+        .sub {
+            color: var(--muted);
+            font-size: clamp(1rem, 1.4vw, 1.25rem);
+            margin-top: 1rem;
+            max-width: 100%;
+            line-height: 1.55;
         }
-        .phone-row {
-          flex-direction: column;
-          align-items: center;
-          gap: 1.4rem;
+        .kicker {
+            font-family: var(--mono);
+            color: var(--violet);
+            font-size: 0.95rem;
         }
-        .phone-row > div[style*='max-width'] {
-          max-width: 100% !important;
+        .go-demo:link{
+            text-decoration: none;
         }
-        .phone {
-          width: min(220px, 62vw);
-        }
-        .phone .screen {
-          min-height: 340px;
-        }
-        .concept-row {
-          flex-direction: column;
-          gap: 1rem;
-        }
-        .diagram-row {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 0.8rem;
-        }
-        .diagram-row .arrow {
-          transform: rotate(90deg);
-          margin: 0 auto;
-        }
-        .node {
-          width: 100%;
-          min-width: 0;
-        }
-        .mermaid-wrap {
-          max-height: 42vh;
-          padding: 0.8rem;
-        }
-        .capa-logo {
-          height: 34px;
-          top: 2.4vh;
-          right: 6vw;
-        }
-        .capa-rule {
-          flex-wrap: wrap;
-          row-gap: 0.6rem;
-        }
-        .capa-rule .line {
-          display: none;
+        .go-demo:visited {
+            text-decoration: none;
         }
 
-        .slide-bio {
-          flex-direction: column;
-          padding: 0;
-        }
-        .bio-side {
-          width: 100%;
-          min-width: 0;
-          border-right: none;
-          border-bottom: 1px solid var(--violet-dim);
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 2.4rem 1.6rem 1.2rem;
-          gap: 0.9rem;
-        }
-        .bio-avatar {
-          position: static;
-          transform: none;
-          width: 104px;
-          aspect-ratio: 1;
-        }
-        .bio-side .rotated {
-          writing-mode: horizontal-tb;
-          transform: none;
-          text-align: center;
-          max-width: 260px;
-        }
-        .bio-main {
-          padding: 1.8rem 6vw 3rem;
+        .go-demo:hover {
+            text-decoration: underline;
         }
 
-        .footer-meta,
-        .nav-hint {
-          display: none;
-        }
-        .progress-label {
-          bottom: calc(1.2vh + 12px + 0.5rem);
-          right: 6vw;
-          font-size: 0.65rem;
-        }
-        .scrubber {
-          left: 6vw;
-          right: 6vw;
-          bottom: 1.2vh;
-          height: 12px;
-        }
-        .speaker-notes {
-          font-size: 0.72rem;
-          padding: 0.7rem 1rem;
-          max-height: 26vh;
+        .go-demo:active {
+            text-decoration: underline;
         }
 
-        .tap-nav {
-          display: flex;
+        .grid {
+            display: grid;
+            gap: 1.4rem;
+            margin-top: 2rem;
         }
-      }
+        .cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        .cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
 
-      @media (max-width: 480px) {
-        .slide {
-          padding: 7vh 5.5vw 9vh 5.5vw;
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 1.3rem 1.5rem;
         }
-        .phone {
-          width: min(170px, 52vw);
+        .card h3 {
+            font-family: var(--display);
+            font-size: 1.02rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .card p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+        .card.tdc-blue {
+            border-color: rgba(0, 78, 145, 0.5);
+            box-shadow: 0 0 0 1px rgba(0, 78, 145, 0.08) inset;
+        }
+        .card.c-red,
+        .concept-card.c-red {
+            border-top: 3px solid var(--tdc-red);
+        }
+        .card.c-orange,
+        .concept-card.c-orange {
+            border-top: 3px solid var(--tdc-orange);
+        }
+        .card.c-yellow,
+        .concept-card.c-yellow {
+            border-top: 3px solid var(--tdc-yellow);
+        }
+        .card.c-green,
+        .concept-card.c-green {
+            border-top: 3px solid var(--tdc-green);
+        }
+        .card.c-darkgreen,
+        .concept-card.c-darkgreen {
+            border-top: 3px solid var(--tdc-darkgreen);
+        }
+        .card.c-blue,
+        .concept-card.c-blue {
+            border-top: 3px solid var(--tdc-blue);
+        }
+        .card.c-darkblue,
+        .concept-card.c-darkblue {
+            border-top: 3px solid var(--tdc-darkblue);
+        }
+        .card.c-tdcviolet,
+        .concept-card.c-tdcviolet {
+            border-top: 3px solid var(--tdc-violet);
+        }
+
+        code,
+        pre {
+            font-family: var(--mono);
         }
         pre {
-          font-size: 0.72rem;
-          padding: 0.8rem 1rem;
+            background: #0b0b12;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            font-size: clamp(0.68rem, 1vw, 0.82rem);
+            line-height: 1.55;
+            overflow: auto;
+            color: #dad6f0;
+            max-height: 48vh;
         }
-        .card,
-        .concept-card {
-          padding: 1rem 1.1rem;
+        .tok {
+            color: var(--lime);
+        }
+        .str {
+            color: #f5c97b;
+        }
+        .com {
+            color: #5f5c74;
+            font-style: italic;
+        }
+        .kw {
+            color: var(--violet);
+        }
+
+        .badge {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            letter-spacing: 0.04em;
+        }
+        .badge.bug {
+            background: rgba(255, 107, 107, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(255, 107, 107, 0.35);
+        }
+        .badge.fix {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(74, 222, 128, 0.35);
+        }
+
+        /* Phone mockup — estilo de app de marketplace real (tela clara, header de
+       confirmação, cards com sombra), igual ao usado na demo interativa */
+        .phone-row {
+            display: flex;
+            gap: 2.2rem;
+            align-items: flex-start;
+            margin-top: 1.3rem;
+        }
+        .phone {
+            width: 280px;
+            background: #0b0b10;
+            border: 1px solid var(--line);
+            border-radius: 32px;
+            padding: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
+        }
+        .phone .screen {
+            background: #f4f5f8;
+            border-radius: 24px;
+            min-height: 420px;
+            overflow: hidden;
+            color: #1a1a2e;
+        }
+        .mp-statusbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.85rem 0.1rem;
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .mp-header {
+            padding: 1rem 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--tdc-green), #027a3a);
+        }
+        .mp-check {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .mp-header strong {
+            display: block;
+            font-size: 0.85rem;
+            font-family: var(--display);
+        }
+        .mp-header span {
+            font-size: 0.66rem;
+            opacity: 0.85;
+        }
+        .mp-body {
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .mp-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 0.75rem 0.85rem;
+            box-shadow: 0 1px 4px rgba(20, 20, 40, 0.08);
+            display: flex;
+            gap: 0.65rem;
+            align-items: flex-start;
+        }
+        .mp-card .ic {
+            font-size: 1.05rem;
+            flex-shrink: 0;
+            margin-top: 0.05rem;
+        }
+        .mp-card h4 {
+            font-size: 0.76rem;
+            margin-bottom: 0.15rem;
+            color: #1a1a2e;
+            font-family: var(--display);
+        }
+        .mp-card p {
+            font-size: 0.66rem;
+            color: #6b6b7d;
+            line-height: 1.4;
+        }
+        .mp-card.notice {
+            background: #ebf3ff;
+            border: 1px solid #c7dcfb;
+        }
+        .mp-card.notice h4 {
+            color: var(--tdc-blue);
+        }
+        .mp-cta {
+            margin-top: 0.15rem;
+            background: var(--tdc-orange);
+            color: #fff;
+            text-align: center;
+            font-size: 0.72rem;
+            font-family: var(--display);
+            font-weight: 600;
+            padding: 0.55rem;
+            border-radius: 9px;
+        }
+
+        .scrubber {
+            position: absolute;
+            left: 9vw;
+            right: 9vw;
+            bottom: 5vh;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 24px;
+        }
+        .bar {
+            flex: 1;
+            background: var(--line);
+            border-radius: 2px;
+            height: 20%;
+            transition:
+                    background 0.3s,
+                    height 0.3s;
+        }
+        .bar.played {
+            background: linear-gradient(
+                    180deg,
+                    var(--violet-light),
+                    var(--violet-mid)
+            );
+        }
+        .bar.current {
+            background: var(--lime);
+        }
+
+        .footer-meta {
+            position: absolute;
+            left: 9vw;
+            bottom: calc(5vh + 24px + 1rem);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+        .nav-hint {
+            position: absolute;
+            right: 9vw;
+            bottom: calc(5vh + 24px + 1rem);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .num {
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        ul.plain {
+            list-style: none;
+            max-width: 100%;
+        }
+        ul.plain li {
+            position: relative;
+            padding-left: 1.3rem;
+            margin-bottom: 0.55rem;
+            color: var(--text);
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+        ul.plain li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--violet);
+        }
+
+        .big-lesson {
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.25;
+            max-width: 26ch;
+        }
+        .lesson-num {
+            font-family: var(--mono);
+            color: var(--lime);
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
         }
         .node {
-          min-width: 0;
-          width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            min-width: 140px;
+            text-align: center;
+            border-top: 2px solid var(--violet-mid);
         }
-        .tap-nav {
-          width: 40px;
-          height: 40px;
-          font-size: 1.1rem;
+        .node b {
+            display: block;
+            font-family: var(--display);
+            font-size: 0.88rem;
+            margin-bottom: 0.2rem;
+            color: var(--text);
         }
-      }
+        .arrow {
+            color: var(--violet);
+            font-size: 1.2rem;
+        }
 
-      /* Landscape em celular: telas baixas precisam de menos respiro vertical */
-      @media (max-height: 460px) and (orientation: landscape) {
-        .slide {
-          padding: 4vh 6vw 6vh 6vw;
+        .mermaid-wrap {
+            background: var(--bg-raised);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 1rem 1.4rem;
+            margin-top: 1.1rem;
+            overflow: auto;
+            max-height: min(70vh, calc(100vh - 13rem));
+            text-align: center;
+        }
+        /* Estado Padrão: esconde a barra e impede o overflow do navegador */
+        .mermaid-wrap {
+            overflow: hidden; /* Esconde completamente qualquer barra do sistema */
+            border-radius: 16px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--violet) var(--bg-card);
+        }
+        /* Quando o mouse entra no container: ativa a rolagem e exibe a barra */
+        .mermaid-wrap:hover {
+            overflow: auto; /* Ativa a rolagem e força o SO a renderizar a barra */
+        }
+        /* Estilização da barra customizada (Chrome, Edge, Safari) */
+        .mermaid-wrap::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .mermaid-wrap::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 4px;
+        }
+        .mermaid-wrap::-webkit-scrollbar-thumb {
+            background: var(--violet);
+            border-radius: 4px;
+        }
+        .mermaid-wrap::-webkit-scrollbar-thumb:hover {
+            background: var(--violet-light);
+        }
+        .mermaid {
+            font-family: var(--mono) !important;
+        }
+        .mermaid svg {
+            display: block;
+            margin: 0 auto;
+        }
+        .diagram-mobile {
+            display: none;
+        }
+
+        .concept-row {
+            display: flex;
+            gap: 1.6rem;
+            margin-top: 1.6rem;
+            flex-wrap: wrap;
+        }
+        .concept-card {
+            flex: 1;
+            min-width: 240px;
+            background: var(--bg-card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 1.3rem 1.4rem;
+        }
+        .concept-card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.6rem;
+            display: block;
+        }
+        .concept-card h3 {
+            font-family: var(--display);
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+        }
+        .concept-card p {
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+        .concept-card .analogy {
+            margin-top: 0.7rem;
+            font-size: 0.82rem;
+            color: var(--violet-light);
+            font-style: italic;
+        }
+
+        .speaker-notes {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            color: var(--lime);
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            padding: 1rem 2rem;
+            max-height: 30vh;
+            overflow: auto;
+            display: none;
+            z-index: 50;
+            border-top: 2px solid var(--violet);
+        }
+        .speaker-notes.show {
+            display: block;
+        }
+        .progress-label {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+            position: absolute;
+            right: 9vw;
+            bottom: calc(5vh + 24px + 1rem);
+        }
+
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 182, 245, 0.35);
+            pointer-events: none;
+        }
+        .slide-capa {
+            background:
+                    radial-gradient(
+                            1100px 760px at 90% -8%,
+                            rgba(108, 53, 217, 0.45),
+                            transparent 60%
+                    ),
+                    radial-gradient(
+                            700px 500px at 8% 108%,
+                            rgba(41, 11, 94, 0.55),
+                            transparent 65%
+                    ),
+                    radial-gradient(
+                            500px 400px at 50% 100%,
+                            rgba(0, 78, 145, 0.18),
+                            transparent 70%
+                    ),
+                    var(--bg);
+            overflow: hidden;
+        }
+        .quote-slide {
+            background:
+                    radial-gradient(
+                            1100px 760px at 90% -8%,
+                            rgba(238, 86, 175, 0.45),
+                            transparent 60%
+                    ),
+                    radial-gradient(
+                            700px 500px at 8% 108%,
+                            rgba(94, 11, 64, 0.55),
+                            transparent 65%
+                    ),
+                    radial-gradient(
+                            500px 400px at 50% 100%,
+                            rgba(238, 86, 175, 0.18),
+                            transparent 70%
+                    ),
+                    var(--bg);
+        }
+        .slide-capa h1 {
+            background: linear-gradient(
+                    115deg,
+                    var(--text) 40%,
+                    var(--violet-light) 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .capa-rule {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.4rem;
+        }
+        .capa-rule .line {
+            flex: 1;
+            max-width: 220px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--violet-light), transparent);
+        }
+        .capa-logo {
+            position: absolute;
+            top: 6vh;
+            right: 9vw;
+            height: 56px;
+            opacity: 0.92;
+        }
+
+        /* Slide "Quem sou eu" */
+        .slide-bio {
+            flex-direction: row;
+            padding: 0;
+            overflow: hidden;
         }
         .bio-side {
-          padding: 1.2rem 1.6rem;
+            width: 32%;
+            min-width: 260px;
+            background: #0a0812;
+            border-right: 1px solid var(--violet-dim);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 3.2rem 1.6rem;
+            overflow: hidden; /* Mantém a imagem presa dentro do painel */
         }
         .bio-avatar {
-          width: 72px;
+            position: absolute;
+            inset: 0; /* Ocupa 100% da largura e altura do .bio-side */
+            width: 100%;
+            height: 100%;
+            border-radius: 0; /* Remove os cantos arredondados */
+            background: transparent;
+            box-shadow: none;
         }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="tdc-stripe">
-      <span></span><span></span><span></span><span></span><span></span
-      ><span></span><span></span><span></span>
-    </div>
+        .bio-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Preenche todo o espaço sem distorcer */
+            object-position: center top; /* Foca no topo (rosto/corpo) */
+        }
+        .bio-side .rotated {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-family: var(--mono);
+            letter-spacing: 0.18em;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .bio-main {
+            flex: 1;
+            padding: 6vh 6vw 12vh 6vw;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-    <div class="deck" id="deck">
-      <!-- 1. CAPA -->
-      <section
-        class="slide slide-capa"
-        style="
+        .resource-list {
+            display: grid;
+            gap: 1.25rem;
+            margin-top: 1.8rem;
+        }
+        .resource-row {
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+            min-width: 0;
+        }
+        .resource-qr {
+            background: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            width: 132px;
+            height: 132px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .resource-qr canvas,
+        .resource-qr img {
+            max-width: 100%;
+            height: auto;
+        }
+        .resource-info {
+            min-width: 0;
+        }
+        .resource-link {
+            display: inline-block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+        .mock-link {
+            display: block;
+            margin-top: 4px;
+            color: #0066cc;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        /* Setas de navegação para toque — escondidas no desktop, onde o clique
+       nas laterais e as setas do teclado já resolvem. */
+        .tap-nav {
+            display: none;
+            position: fixed;
+            bottom: 1.4vh;
+            z-index: 55;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-family: var(--display);
+            font-size: 1.3rem;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+            touch-action: manipulation;
+        }
+        .tap-nav.prev {
+            left: 3vw;
+        }
+        .tap-nav.next {
+            right: 3vw;
+        }
+
+        /* ==================== RESPONSIVO — TABLET / CELULAR ==================== */
+        @media (max-width: 860px) {
+            body {
+                overflow: auto;
+            }
+            .deck {
+                height: auto;
+                min-height: 0;
+            }
+            .slide {
+                position: relative;
+                inset: auto;
+                display: none;
+                width: 100%;
+                max-width: 100vw;
+                min-width: 0;
+                min-height: 100svh;
+                height: auto;
+                padding: 4.5rem 6vw 6rem;
+                justify-content: flex-start;
+                overflow: visible;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                transition: none;
+                -webkit-overflow-scrolling: touch;
+            }
+            .slide.active {
+                display: flex;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+            }
+            .slide h1,
+            .slide h2,
+            .slide p,
+            .slide ul,
+            .slide .card,
+            .slide .concept-card,
+            .slide .mermaid-wrap,
+            .slide .diagram-mobile,
+            .slide .diagram-step {
+                min-width: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            .slide h1,
+            .slide h2 {
+                overflow-wrap: anywhere;
+            }
+            h1 {
+                font-size: clamp(1.6rem, 7.5vw, 2.6rem);
+            }
+            h2 {
+                font-size: clamp(1.3rem, 5.8vw, 1.9rem);
+            }
+            .grid.cols-2,
+            .grid.cols-3 {
+                grid-template-columns: 1fr;
+            }
+            .phone-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.4rem;
+            }
+            .scenario-row {
+                gap: 1.5rem;
+            }
+            .scenario-copy {
+                width: 100%;
+            }
+            .scenario-copy .sub {
+                font-size: clamp(1rem, 4.25vw, 1.2rem) !important;
+            }
+            .phone-row > div[style*='max-width'] {
+                max-width: 100% !important;
+            }
+            .phone {
+                width: min(240px, 74vw);
+            }
+            .phone .screen {
+                min-height: 360px;
+            }
+            .concept-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .diagram-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .diagram-row .arrow {
+                transform: rotate(90deg);
+                margin: 0 auto;
+            }
+            .node {
+                width: 100%;
+                min-width: 0;
+                font-size: 0.9rem;
+                padding: 0.9rem 1rem;
+            }
+            .node b {
+                font-size: 1.05rem;
+            }
+            .mermaid-wrap {
+                max-height: none;
+                padding: 0.45rem;
+                overflow: scroll;
+            }
+            .mermaid-wrap .mermaid {
+                display: none;
+            }
+            .diagram-mobile {
+                display: grid;
+                gap: 0.6rem;
+                text-align: left;
+            }
+            .diagram-step {
+                background: var(--bg-card);
+                border: 1px solid var(--line);
+                border-top: 3px solid var(--violet-mid);
+                border-radius: 10px;
+                padding: 0.85rem 0.9rem;
+                color: var(--muted);
+                font-family: var(--mono);
+                font-size: clamp(0.88rem, 3.6vw, 1rem);
+                line-height: 1.45;
+            }
+            .diagram-step b {
+                display: block;
+                color: var(--text);
+                font-family: var(--display);
+                font-size: 1rem;
+                margin-bottom: 0.2rem;
+            }
+            .diagram-step.c-green { border-top-color: var(--tdc-green); }
+            .diagram-step.c-yellow { border-top-color: var(--tdc-yellow); }
+            .diagram-step.c-blue { border-top-color: var(--tdc-blue-light); }
+            .diagram-step.c-orange { border-top-color: var(--tdc-orange); }
+            .diagram-step.c-red { border-top-color: var(--tdc-red); }
+            .diagram-connector {
+                color: var(--violet);
+                font-family: var(--mono);
+                font-size: 0.78rem;
+                text-align: center;
+                line-height: 1.2;
+            }
+            .sequence-mobile .sequence-row {
+                display: grid;
+                grid-template-columns: minmax(5.5rem, 0.7fr) 1fr;
+                gap: 0.65rem;
+                align-items: center;
+                padding: 0.7rem 0;
+                border-bottom: 1px solid var(--line);
+                font-family: var(--mono);
+                font-size: clamp(0.86rem, 3.5vw, 0.98rem);
+                line-height: 1.4;
+            }
+            .sequence-mobile .sequence-row:last-child {
+                border-bottom: 0;
+            }
+            .sequence-mobile strong {
+                color: var(--text);
+                font-family: var(--display);
+            }
+            .sequence-mobile span {
+                color: var(--violet-light);
+            }
+            .closing-quote {
+                font-size: clamp(1.95rem, 8vw, 3rem) !important;
+                max-width: 20ch !important;
+            }
+            .closing-quote br {
+                display: none;
+            }
+            .big-lesson {
+                font-size: clamp(1.85rem, 7.2vw, 2.8rem);
+                max-width: none;
+            }
+            .lesson-num {
+                font-size: 1.15rem;
+            }
+            .capa-logo {
+                height: 34px;
+                top: 2.4vh;
+                right: 6vw;
+            }
+            .capa-rule {
+                flex-wrap: wrap;
+                row-gap: 0.6rem;
+            }
+            .trilha-chip {
+                max-width: 100%;
+                white-space: normal;
+            }
+            .capa-rule .line {
+                display: none;
+            }
+
+            .slide-bio {
+                flex-direction: column;
+                padding: 0;
+            }
+            .bio-side {
+                width: 100%;
+                min-width: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--violet-dim);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 2.4rem 1.6rem 1.2rem;
+                gap: 0.9rem;
+            }
+            .bio-avatar {
+                position: static;
+                transform: none;
+                width: 104px;
+                aspect-ratio: 1;
+            }
+            .bio-side .rotated {
+                writing-mode: horizontal-tb;
+                transform: none;
+                text-align: center;
+                max-width: 260px;
+            }
+            .bio-main {
+                padding: 1.8rem 6vw 3rem;
+            }
+
+            .footer-meta,
+            .nav-hint,
+            .progress-label,
+            .scrubber {
+                display: none;
+            }
+            .speaker-notes {
+                font-size: 0.72rem;
+                padding: 0.7rem 1rem;
+                max-height: 26vh;
+            }
+
+            .tap-nav {
+                display: flex;
+                bottom: max(1rem, env(safe-area-inset-bottom));
+            }
+            .resource-list {
+                gap: 1.1rem;
+            }
+            .resource-row {
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .resource-qr {
+                width: 88px;
+                height: 88px;
+                padding: 6px;
+                border-radius: 10px;
+            }
+            .resource-info .sub {
+                font-size: clamp(0.92rem, 3.7vw, 1.08rem);
+            }
+            pre {
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+                overflow-x: hidden;
+            }
+            .slide-bio {
+                padding-bottom: 6rem;
+            }
+            .resource-info {
+                overflow-wrap: anywhere;
+            }
+            .resource-info p {
+                overflow-wrap: anywhere;
+            }
+            .tap-nav {
+                box-shadow: 0 0 0 5px rgba(16, 16, 24, 0.45), 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+            }
+            .slide-capa {
+                overflow: visible;
+            }
+            .slide-capa .deco-circle {
+                max-width: 80vw;
+                max-height: 80vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide {
+                padding: 4.25rem 5.5vw 5.75rem;
+            }
+            .phone {
+                width: min(240px, 74vw);
+            }
+            pre {
+                font-size: 0.72rem;
+                padding: 0.8rem 1rem;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+                overflow-x: hidden;
+            }
+            .card,
+            .concept-card {
+                padding: 1rem 1.1rem;
+            }
+            .node {
+                min-width: 0;
+                width: 100%;
+            }
+            .tap-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Landscape em celular: telas baixas precisam de menos respiro vertical */
+        @media (max-height: 460px) and (orientation: landscape) {
+            .slide {
+                padding: 4vh 6vw 6vh 6vw;
+            }
+            .bio-side {
+                padding: 1.2rem 1.6rem;
+            }
+            .bio-avatar {
+                width: 72px;
+            }
+        }
+
+        @media (min-width: 861px) and (max-height: 760px) {
+            .slide {
+                justify-content: flex-start;
+                padding-top: 8vh;
+                padding-bottom: 18vh;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="tdc-stripe">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="deck" id="deck">
+    <!-- 1. CAPA -->
+    <section class="slide slide-capa" style="
           background:
             radial-gradient(
               1100px 760px at 90% -8%,
@@ -979,338 +1241,305 @@
               transparent 70%
             ),
             var(--bg);
-        "
-      >
-        <div
-          class="deco-circle"
-          style="
+        ">
+        <div class="deco-circle" style="
             width: 420px;
             height: 420px;
             top: -140px;
             right: -60px;
             border-color: rgba(238, 86, 175, 0.28);
-          "
-        ></div>
-        <div
-          class="deco-circle"
-          style="
+          "></div>
+        <div class="deco-circle" style="
             width: 180px;
             height: 180px;
             top: 22%;
             right: 14%;
             border-color: rgba(238, 86, 175, 0.4);
-          "
-        ></div>
-        <img
-          class="capa-logo"
-          src="https://cdn.thedevconf.com.br/2026/img/site/H-TDCSaoPaulo%20-%20Wth.png"
-          alt="TDC São Paulo"
-          onerror="this.style.display = 'none'"
-        />
+          "></div>
+        <img class="capa-logo" src="https://cdn.thedevconf.com.br/2026/img/site/H-TDCSaoPaulo%20-%20Wth.png" alt="TDC São Paulo" onerror="this.style.display = 'none'">
         <div class="capa-rule">
-          <span class="trilha-chip"
-            >Trilha Arquitetura Java · TDC São Paulo 2026</span
-          >
-          <div class="line"></div>
+          <span class="trilha-chip">Trilha Arquitetura Java · TDC São Paulo 2026</span>
+            <div class="line"></div>
         </div>
         <h1 style="margin-top: 1.2rem">
-          Uma feature,<br />quatro microsserviços
+            Uma feature,<br>quatro microsserviços
         </h1>
         <p class="sub">
-          Entregando funcionalidades em ecossistemas Java de alta escala.
+            Entregando funcionalidades em ecossistemas Java de alta escala.
         </p>
-        <p
-          class="sub"
-          style="
+        <p class="sub" style="
             margin-top: 2.2rem;
             color: var(--text);
             font-family: var(--mono);
             font-size: 0.95rem;
-          "
-        >
-          Larissa Souza · Software Developer, Pharma @Mercado Livre
+          ">
+            Larissa Souza · Software Developer, Pharma @Mercado Livre
         </p>
-      </section>
+    </section>
 
-      <!-- 2. QUEM SOU EU -->
-      <section class="slide slide-bio">
+    <!-- 2. QUEM SOU EU -->
+    <section class="slide slide-bio">
         <div class="bio-side">
-          <div class="bio-avatar">
-            <img
-                    src="https://media.licdn.com/dms/image/v2/D4D03AQG_bGYuIDGzgg/profile-displayphoto-crop_800_800/B4DZ7S_zSOJwAI-/0/1781656403628?e=1789603200&v=beta&t=_4wuMco3yMOab-tBDuRh7ZLtS0-TVaMqO3RJtVYg_M8"
-                    alt="Foto de Larissa Souza, mulher negra com cabelo crespo peso, está vestindo camiseta roxo e um sobretudo rose"
-            />
-          </div>
-          <div class="rotated">UMA APAIXONADA PELA TECNOLOGIA</div>
+            <div class="bio-avatar">
+                <img src="https://media.licdn.com/dms/image/v2/D4D03AQG_bGYuIDGzgg/profile-displayphoto-crop_800_800/B4DZ7S_zSOJwAI-/0/1781656403628?e=1789603200&amp;v=beta&amp;t=_4wuMco3yMOab-tBDuRh7ZLtS0-TVaMqO3RJtVYg_M8" alt="Foto de Larissa Souza, mulher negra com cabelo crespo peso, está vestindo camiseta roxo e um sobretudo rose">
+            </div>
+            <div class="rotated">UMA APAIXONADA PELA TECNOLOGIA</div>
         </div>
         <div class="bio-main">
-          <div
-            class="deco-circle"
-            style="
+            <div class="deco-circle" style="
               width: 170px;
               height: 170px;
               top: -60px;
               right: 8vw;
               border-color: rgba(108, 53, 217, 0.4);
-            "
-          ></div>
-          <div
-            class="deco-circle"
-            style="
+            "></div>
+            <div class="deco-circle" style="
               width: 110px;
               height: 110px;
               bottom: -30px;
               left: -30px;
               border-color: rgba(139, 92, 246, 0.25);
-            "
-          ></div>
-          <div class="eyebrow">Quem sou eu</div>
-          <h2 style="font-size: clamp(2rem, 4vw, 3.2rem)">Larissa Souza</h2>
-          <ul class="plain" style="margin-top: 1.6rem">
-            <li>Software Developer na equipe de Pharma do Mercado Livre</li>
-            <li>Uma garota que ama se envolver com a comunidade Tech</li>
-            <li>Aspirante a fotógrafa e videomaker</li>
-            <li>Voluntária e Palestrante em eventos</li>
-            <li>
-              Cursando Tecnólogo em Análise e Desenvolvimento de Sistemas no
-              Senac
-            </li>
-            <li>Técnica em Informática pelo Instituto Federal</li>
-          </ul>
+            "></div>
+            <div class="eyebrow">Quem sou eu</div>
+            <h2 style="font-size: clamp(2rem, 4vw, 3.2rem)">Larissa Souza</h2>
+            <ul class="plain" style="margin-top: 1.6rem">
+                <li>Software Developer na equipe de Pharma do Mercado Livre</li>
+                <li>Uma garota que ama se envolver com a comunidade Tech</li>
+                <li>Aspirante a fotógrafa e videomaker</li>
+                <li>Voluntária e Palestrante em eventos</li>
+                <li>
+                    Cursando Tecnólogo em Análise e Desenvolvimento de Sistemas no
+                    Senac
+                </li>
+                <li>Técnica em Informática pelo Instituto Federal</li>
+            </ul>
         </div>
-      </section>
+    </section>
 
-      <!-- 3. O GAP -->
-      <section class="slide">
+    <!-- 3. O GAP -->
+    <section class="slide">
         <div class="eyebrow c-red">O gap</div>
         <h2>
-          A maioria dos tutoriais ensina a criar serviços isolados.<br />O mundo
-          real não é assim.
+            A maioria dos tutoriais ensina a criar serviços isolados.<br>O mundo
+            real não é assim.
         </h2>
         <div class="grid cols-2">
-          <div class="card">
-            <h3>O mundo do tutorial</h3>
-            <p>
-              Um endpoint, um banco, um deploy. Adicionar uma funcionalidade é
-              escrever uma classe nova e subir.
-            </p>
-          </div>
-          <div class="card">
-            <h3>O mundo real</h3>
-            <p>
-              Sistemas distribuídos: uma única funcionalidade nova exige alterar
-              múltiplos repositórios ao mesmo tempo — cada um com seu próprio
-              ciclo de deploy.
-            </p>
-          </div>
+            <div class="card">
+                <h3>O mundo do tutorial</h3>
+                <p>
+                    Um endpoint, um banco, um deploy. Adicionar uma funcionalidade é
+                    escrever uma classe nova e subir.
+                </p>
+            </div>
+            <div class="card">
+                <h3>O mundo real</h3>
+                <p>
+                    Sistemas distribuídos: uma única funcionalidade nova exige alterar
+                    múltiplos repositórios ao mesmo tempo — cada um com seu próprio
+                    ciclo de deploy.
+                </p>
+            </div>
         </div>
         <p class="sub" style="margin-top: 2rem">
-          Hoje vou abrir o capô de um caso real: um componente visual novo na
-          tela de pós-compra de um e-commerce de alta escala — e um
-          comportamento oculto do Project Reactor que quase derrubou o fluxo
-          inteiro.
+            Hoje vou abrir o capô de um caso real: um componente visual novo na
+            tela de pós-compra de um e-commerce de alta escala — e um
+            comportamento oculto do Project Reactor que quase derrubou o fluxo
+            inteiro.
         </p>
-      </section>
+    </section>
 
-      <!-- 4. O CENÁRIO -->
-      <!-- 4. O CENÁRIO -->
-      <section class="slide">
+    <!-- 4. O CENÁRIO -->
+    <!-- 4. O CENÁRIO -->
+    <section class="slide">
         <div class="eyebrow c-orange">O cenário de hoje</div>
         <h2>A tela de "Parabéns pela compra" de um marketplace</h2>
-        <div class="phone-row" style="align-items: center; gap: 3rem;">
-          <div class="phone" style="transform-origin: top left; margin-right: 2rem;">
-            <div class="screen">
-              <div class="mp-statusbar">
-                <span>9:41</span><span>●●● 100%</span>
-              </div>
-              <div class="mp-header">
-                <div class="mp-check">✓</div>
-                <div>
-                  <strong>Compra realizada!</strong><span>Pedido #48213</span>
+        <div class="phone-row scenario-row">
+            <div class="phone">
+                <div class="screen">
+                    <div class="mp-statusbar">
+                        <span>9:41</span><span>●●● 100%</span>
+                    </div>
+                    <div class="mp-header">
+                        <div class="mp-check">✓</div>
+                        <div>
+                            <strong>Compra realizada!</strong><span>Pedido #48213</span>
+                        </div>
+                    </div>
+                    <div class="mp-body">
+                        <div class="mp-card">
+                            <span class="ic">🚚</span>
+                            <div>
+                                <h4>Acompanhe seu pedido</h4>
+                                <p>Chega em até 3 dias úteis.</p>
+                            </div>
+                        </div>
+                        <div class="mp-card">
+                            <span class="ic">🛍️</span>
+                            <div>
+                                <h4>Produtos relacionados</h4>
+                                <p>3 itens que combinam com sua compra.</p>
+                            </div>
+                        </div>
+                        <div class="mp-card notice">
+                            <span class="ic">📄</span>
+                            <div>
+                                <h4>Meus Direitos</h4>
+                                <p>Este produto tem prazo de troca estendido. <span class="mock-link">Saiba como usar</span></p>
+                            </div>
+                        </div>
+                        <div class="mp-cta">Acompanhar pedido</div>
+                    </div>
                 </div>
-              </div>
-              <div class="mp-body">
-                <div class="mp-card">
-                  <span class="ic">🚚</span>
-                  <div>
-                    <h4>Acompanhe seu pedido</h4>
-                    <p>Chega em até 3 dias úteis.</p>
-                  </div>
-                </div>
-                <div class="mp-card">
-                  <span class="ic">🛍️</span>
-                  <div>
-                    <h4>Produtos relacionados</h4>
-                    <p>3 itens que combinam com sua compra.</p>
-                  </div>
-                </div>
-                <div class="mp-card notice">
-                  <span class="ic">📄</span>
-                  <div>
-                    <h4>Meus Direitos</h4>
-                    <p>Este produto tem prazo de troca estendido. <a href="#" style="display: block; margin-top: 4px; color: #0066cc; text-decoration: underline; font-weight: 600; cursor: default;" onclick="return false;">Saiba como usar</a></p>
-                  </div>
-                </div>
-                <div class="mp-cta">Acompanhar pedido</div>
-              </div>
             </div>
-          </div>
-          <div style="flex: 1;">
-            <p class="sub" style="font-size: 1.25rem; line-height: 1.6; color: var(--text);">
+            <div class="scenario-copy">
+                <p class="sub" style="font-size: 1.25rem; line-height: 1.6; color: var(--text);">
 
-              Todo marketplace tem uma tela dessas depois da compra. O card
-               <b style="color: var(--lime);">"Meus Direitos"</b> só aparece
-              quando o item comprado pertence a uma categoria regulamentada
-              (garantia estendida, direito de arrependimento, produtos com
-              laudo, etc.) — o resto do tempo, ele simplesmente não existe na
-              tela.
-            </p>
-            <p class="sub" style="font-size: 1.25rem; line-height: 1.6; margin-top: 1.5rem; color: #a19dba;">
-              É o exemplo perfeito de um problema que resolvemos em produção:
-              <b style="color: #fff; background: rgba(139, 92, 246, 0.2); padding: 2px 6px; border-radius: 4px;">
-                um card condicional, com conteúdo administrado por nosso time, porém que deve ser incluído em um fluxo de alta escala gerenciado por um time externo.</b>
-            </p>
-          </div>
+                    Todo marketplace tem uma tela dessas depois da compra. O card
+                    <b style="color: var(--lime);">"Meus Direitos"</b> só aparece
+                    quando o item comprado pertence a uma categoria regulamentada
+                    (garantia estendida, direito de arrependimento, produtos com
+                    laudo, etc.) — o resto do tempo, ele simplesmente não existe na
+                    tela.
+                </p>
+                <p class="sub" style="font-size: 1.25rem; line-height: 1.6; margin-top: 1.5rem; color: #a19dba;">
+                    É o exemplo perfeito de um problema que resolvemos em produção:
+                    <b style="color: #fff; background: rgba(139, 92, 246, 0.2); padding: 2px 6px; border-radius: 4px;">
+                        um card condicional, com conteúdo administrado por nosso time, porém que deve ser incluído em um fluxo de alta escala gerenciado por um time externo.</b>
+                </p>
+            </div>
         </div>
-      </section>
+    </section>
 
-      <!-- 5. AS 4 RESPONSABILIDADES -->
-      <section class="slide">
+    <!-- 5. AS 4 RESPONSABILIDADES -->
+    <section class="slide">
         <div class="eyebrow c-yellow">O desafio</div>
         <h2>Por que uma feature "simples" precisa de vários microsserviços?</h2>
         <ul class="plain" style="margin-top: 2rem">
-          <li>
-            Alguém precisa <b>decidir</b> se o card aparece (regra de negócio +
-            dado da compra).
-          </li>
-          <li>
-            Alguém precisa <b>buscar o conteúdo</b> (texto, ícone, link) sem
-            hardcode no checkout.
-          </li>
-          <li>
-            Alguém precisa <b>montar a tela</b> a partir de peças que vêm
-            prontas do servidor.
-          </li>
-          <li>
-            Alguém precisa <b>medir</b> se o card funciona, sem travar o fluxo
-            se a medição falhar.
-          </li>
+            <li>
+                Alguém precisa <b>decidir</b> se o card aparece (regra de negócio +
+                dado da compra).
+            </li>
+            <li>
+                Alguém precisa <b>buscar o conteúdo</b> (texto, ícone, link) sem
+                hardcode no checkout.
+            </li>
+            <li>
+                Alguém precisa <b>montar a tela</b> a partir de peças que vêm
+                prontas do servidor.
+            </li>
+            <li>
+                Alguém precisa <b>medir</b> se o card funciona, sem travar o fluxo
+                se a medição falhar.
+            </li>
         </ul>
         <p class="sub" style="margin-top: 1.6rem">
-          Cada responsabilidade dessas mora, literalmente, num serviço
-          diferente. Antes de ver como eles se conectam, vamos alinhar 3
-          conceitos.
+            Cada responsabilidade dessas mora, literalmente, num serviço
+            diferente. Antes de ver como eles se conectam, vamos alinhar 3
+            conceitos.
         </p>
-      </section>
+    </section>
 
-      <!-- 6. PRIMER: PROGRAMAÇÃO REATIVA -->
-      <section class="slide">
+    <!-- 6. PRIMER: PROGRAMAÇÃO REATIVA -->
+    <section class="slide">
         <div class="eyebrow no-dot">// Conceito 1 de 3</div>
         <h2>O que é programação reativa (em 60 segundos)</h2>
         <div class="concept-row">
-          <div class="concept-card">
-            <span class="icon">🧑‍💼</span>
-            <h3>Modelo tradicional (bloqueante)</h3>
-            <p>
-              Uma thread chama um serviço externo e <b>fica parada</b> esperando
-              a resposta. Se a fila crescer, você precisa de mais threads — que
-              custam memória.
-            </p>
-            <p class="analogy">
-              Como um garçom que fica plantado na cozinha esperando um único
-              prato ficar pronto, sem atender mais ninguém.
-            </p>
-          </div>
-          <div
-            class="concept-card"
-            style="border-color: rgba(198, 255, 61, 0.35)"
-          >
-            <span class="icon">⚡</span>
-            <h3>Modelo reativo (não-bloqueante)</h3>
-            <p>
-              A thread <b>dispara a chamada e segue livre</b> para atender outra
-              coisa. Quando a resposta chega, um callback é acionado. Poucas
-              threads atendem muito mais requisições.
-            </p>
-            <p class="analogy">
-              O garçom anota o pedido, entrega pra cozinha e continua atendendo
-              outras mesas — a cozinha o avisa quando o prato sai.
-            </p>
-          </div>
+            <div class="concept-card">
+                <span class="icon">🧑‍💼</span>
+                <h3>Modelo tradicional (bloqueante)</h3>
+                <p>
+                    Uma thread chama um serviço externo e <b>fica parada</b> esperando
+                    a resposta. Se a fila crescer, você precisa de mais threads — que
+                    custam memória.
+                </p>
+                <p class="analogy">
+                    Como um garçom que fica plantado na cozinha esperando um único
+                    prato ficar pronto, sem atender mais ninguém.
+                </p>
+            </div>
+            <div class="concept-card" style="border-color: rgba(198, 255, 61, 0.35)">
+                <span class="icon">⚡</span>
+                <h3>Modelo reativo (não-bloqueante)</h3>
+                <p>
+                    A thread <b>dispara a chamada e segue livre</b> para atender outra
+                    coisa. Quando a resposta chega, um callback é acionado. Poucas
+                    threads atendem muito mais requisições.
+                </p>
+                <p class="analogy">
+                    O garçom anota o pedido, entrega pra cozinha e continua atendendo
+                    outras mesas — a cozinha o avisa quando o prato sai.
+                </p>
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.6rem">
-          Em Java, isso chega via
-          <b style="color: var(--text)">Project Reactor</b> (usado pelo Spring
-          WebFlux): <code>Mono&lt;T&gt;</code> representa 0 ou 1 valor
-          assíncrono; <code>Flux&lt;T&gt;</code>, uma sequência de valores. Tudo
-          o que vamos ver hoje é <code>Mono</code>.
+            Em Java, isso chega via
+            <b style="color: var(--text)">Project Reactor</b> (usado pelo Spring
+            WebFlux): <code>Mono&lt;T&gt;</code> representa 0 ou 1 valor
+            assíncrono; <code>Flux&lt;T&gt;</code>, uma sequência de valores. Tudo
+            o que vamos ver hoje é <code>Mono</code>.
         </p>
-      </section>
+    </section>
 
-      <!-- 7. PRIMER: JAX-RS / REST -->
-      <section class="slide">
+    <!-- 7. PRIMER: JAX-RS / REST -->
+    <section class="slide">
         <div class="eyebrow no-dot">// Conceito 2 de 3</div>
         <h2>Uma rota HTTP é só uma anotação em cima de um método</h2>
         <p class="sub">
-          Se você já viu <code>@Path</code> / <code>@GET</code> do
-          <b style="color: var(--text)">JAX-RS</b> (o padrão Jakarta EE para
-          expor APIs REST em Java) ou <code>@GetMapping</code> do Spring — é a
-          mesma ideia central: uma anotação mapeia um método Java para uma rota
-          HTTP.
+            Se você já viu <code>@Path</code> / <code>@GET</code> do
+            <b style="color: var(--text)">JAX-RS</b> (o padrão Jakarta EE para
+            expor APIs REST em Java) ou <code>@GetMapping</code> do Spring — é a
+            mesma ideia central: uma anotação mapeia um método Java para uma rota
+            HTTP.
         </p>
         <div class="grid cols-2" style="margin-top: 1.6rem">
-          <div class="card c-darkgreen">
-            <h3>Estilo JAX-RS</h3>
-            <pre
-              style="max-height: none"
-            ><span class="kw">@Path</span>(<span class="str">"/feedback"</span>)
+            <div class="card c-darkgreen">
+                <h3>Estilo JAX-RS</h3>
+                <pre style="max-height: none"><span class="kw">@Path</span>(<span class="str">"/feedback"</span>)
 <span class="kw">public class</span> FeedbackResource {
   <span class="kw">@GET</span> <span class="kw">@Path</span>(<span class="str">"/{id}"</span>)
   <span class="kw">public</span> Response get(<span class="kw">@PathParam</span>(<span class="str">"id"</span>) String id) { ... }
 }</pre>
-          </div>
-          <div class="card c-darkgreen">
-            <h3>Estilo usado nos serviços de hoje</h3>
-            <pre
-              style="max-height: none"
-            ><span class="kw">@RestController</span>
+            </div>
+            <div class="card c-darkgreen">
+                <h3>Estilo usado nos serviços de hoje</h3>
+                <pre style="max-height: none"><span class="kw">@RestController</span>
 <span class="kw">public class</span> FeedbackController {
   <span class="kw">@GetMapping</span>(<span class="str">"/feedback/{id}"</span>)
   <span class="kw">public</span> Mono&lt;Feedback&gt; get(<span class="kw">@PathVariable</span> String id) { ... }
 }</pre>
-          </div>
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.4rem">
-          A diferença que importa hoje não é a anotação — é o tipo de retorno:
-          <code>Mono&lt;Feedback&gt;</code> em vez de <code>Feedback</code>. É
-          isso que torna o endpoint não-bloqueante.
+            A diferença que importa hoje não é a anotação — é o tipo de retorno:
+            <code>Mono&lt;Feedback&gt;</code> em vez de <code>Feedback</code>. É
+            isso que torna o endpoint não-bloqueante.
         </p>
-      </section>
+    </section>
 
-      <!-- 8. PRIMER: SERVER-DRIVEN UI / BRICKS -->
-      <section class="slide">
+    <!-- 8. PRIMER: SERVER-DRIVEN UI / BRICKS -->
+    <section class="slide active">
         <div class="eyebrow no-dot">// Conceito 3 de 3</div>
         <h2>O cliente é burro (e isso é ótimo)</h2>
         <div class="grid cols-2">
-          <div class="card c-blue">
-            <h3>Server-Driven UI (SDUI)</h3>
-            <p>
-              O backend decide <em>o quê</em> mostrar e <em>como</em> — o
-              app/site só recebe um JSON descrevendo o componente e renderiza.
-              Trocar o texto de um card não pede deploy do frontend. É o mesmo
-              princípio de plataformas como o
-              <b style="color: var(--text)">Ghost Platform</b> do Airbnb.
-            </p>
-          </div>
-          <div class="card c-blue">
-            <h3>O "brick"</h3>
-            <p>
-              Cada componente visual é um pacote autocontido: tipo, título,
-              ícone, ação. O time de plataforma define os tipos de brick
-              disponíveis; qualquer serviço pode montar um preenchendo os
-              campos.
-            </p>
-          </div>
+            <div class="card c-blue">
+                <h3>Server-Driven UI (SDUI)</h3>
+                <p>
+                    O backend decide <em>o quê</em> mostrar e <em>como</em> — o
+                    app/site só recebe um JSON descrevendo o componente e renderiza.
+                    Trocar o texto de um card não pede deploy do frontend. É o mesmo
+                    princípio de plataformas como o
+                    <b style="color: var(--text)">Ghost Platform</b> do Airbnb.
+                </p>
+            </div>
+            <div class="card c-blue">
+                <h3>O "brick"</h3>
+                <p>
+                    Cada componente visual é um pacote autocontido: tipo, título,
+                    ícone, ação. O time de plataforma define os tipos de brick
+                    disponíveis; qualquer serviço pode montar um preenchendo os
+                    campos.
+                </p>
+            </div>
         </div>
         <pre style="margin-top: 1.5rem"><span class="tok">{</span>
   <span class="str">"type"</span>: <span class="str">"info_card"</span>,
@@ -1319,123 +1548,112 @@
   <span class="str">"body"</span>: <span class="str">"Este produto tem prazo de troca estendido."</span>,
   <span class="str">"action"</span>: <span class="tok">{</span> <span class="str">"label"</span>: <span class="str">"Ver detalhes"</span>, <span class="str">"url"</span>: <span class="str">"..."</span> <span class="tok">}</span>
 <span class="tok">}</span></pre>
-      </section>
+    </section>
 
-      <!-- 9. AS 5 CAMADAS -->
-      <section class="slide">
+    <!-- 9. AS 5 CAMADAS -->
+    <section class="slide">
         <div class="eyebrow c-blue">O mapa</div>
         <h2>As 5 camadas do ecossistema</h2>
         <div class="diagram-row">
-          <div class="node" style="border-top-color: var(--tdc-green)">
-            <b>Backend</b>detecta contexto<br />+ fail-safe reativo
-          </div>
-          <span class="arrow">→</span>
-          <div class="node" style="border-top-color: var(--tdc-yellow)">
-            <b>Config API</b>conteúdo dinâmico<br />deploy próprio
-          </div>
-          <span class="arrow">→</span>
-          <div class="node" style="border-top-color: var(--tdc-blue-light)">
-            <b>Middleend</b>orquestra + monta<br />o componente
-          </div>
-          <span class="arrow">→</span>
-          <div class="node" style="border-top-color: var(--tdc-orange)">
-            <b>Frontend SSR</b>renderiza o que<br />chegou pronto
-          </div>
-          <span class="arrow">→</span>
-          <div class="node" style="border-top-color: var(--tdc-red)">
-            <b>Tracking</b>mede clique<br />sem quebrar nada
-          </div>
+            <div class="node" style="border-top-color: var(--tdc-green)">
+                <b>Backend</b>detecta contexto<br>+ fail-safe reativo
+            </div>
+            <span class="arrow">→</span>
+            <div class="node" style="border-top-color: var(--tdc-yellow)">
+                <b>Config API</b>conteúdo dinâmico<br>deploy próprio
+            </div>
+            <span class="arrow">→</span>
+            <div class="node" style="border-top-color: var(--tdc-blue-light)">
+                <b>Middleend</b>orquestra + monta<br>o componente
+            </div>
+            <span class="arrow">→</span>
+            <div class="node" style="border-top-color: var(--tdc-orange)">
+                <b>Frontend SSR</b>renderiza o que<br>chegou pronto
+            </div>
+            <span class="arrow">→</span>
+            <div class="node" style="border-top-color: var(--tdc-red)">
+                <b>Tracking</b>mede clique<br>sem quebrar nada
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.8rem">
-          Nenhuma camada sabe da regra de negócio da outra. Isso é arquitetura,
-          não acidente. Vamos ver isso como um diagrama de fato.
+            Nenhuma camada sabe da regra de negócio da outra. Isso é arquitetura,
+            não acidente. Vamos ver isso como um diagrama de fato.
         </p>
-      </section>
+    </section>
 
-      <!-- 10. MERMAID: ARQUITETURA -->
-      <section class="slide">
+    <!-- 10. MERMAID: ARQUITETURA -->
+    <section class="slide">
         <div class="eyebrow c-darkblue">Diagrama de arquitetura</div>
         <h2>Como as camadas se conectam</h2>
         <div class="mermaid-wrap">
-          <div class="mermaid">
-            flowchart LR
-            U(["🧑 Usuário<br/>finaliza a compra"]) --> FE["🖥️ Frontend SSR<br/>renderiza bricks"]
-            FE -->|"GET /congrats"| MW["⚙️ Middleend<br/>orquestra e monta"]
-            MW -->|"GET /feedback"| BE["🧩 Backend<br/>decide contexto"]
-            BE -->|"busca conteúdo"| CFG["🗂️ Config API<br/>conteúdo dinâmico"]
-            CFG -.->|"texto/ícone/link"| BE
-            BE -.->|"real_state"| MW
-            MW -.->|"brick JSON"| FE
-            FE -->|"clique"| TRK["📊 Tracking<br/>mede sem travar"]
-          </div>
+            <div class="mermaid" data-processed="true"><svg id="mermaid-1788232559002" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="max-width: none;" viewBox="-8 -8 16 16" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#mermaid-1788232559002{font-family:JetBrains Mono,monospace;font-size:18px;fill:#ccc;}#mermaid-1788232559002 .error-icon{fill:#a44141;}#mermaid-1788232559002 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1788232559002 .edge-thickness-normal{stroke-width:2px;}#mermaid-1788232559002 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1788232559002 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1788232559002 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1788232559002 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1788232559002 .marker{fill:#8B5CF6;stroke:#8B5CF6;}#mermaid-1788232559002 .marker.cross{stroke:#8B5CF6;}#mermaid-1788232559002 svg{font-family:JetBrains Mono,monospace;font-size:18px;}#mermaid-1788232559002 .label{font-family:JetBrains Mono,monospace;color:#ccc;}#mermaid-1788232559002 .cluster-label text{fill:#F9FFFE;}#mermaid-1788232559002 .cluster-label span,#mermaid-1788232559002 p{color:#F9FFFE;}#mermaid-1788232559002 .label text,#mermaid-1788232559002 span,#mermaid-1788232559002 p{fill:#ccc;color:#ccc;}#mermaid-1788232559002 .node rect,#mermaid-1788232559002 .node circle,#mermaid-1788232559002 .node ellipse,#mermaid-1788232559002 .node polygon,#mermaid-1788232559002 .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}#mermaid-1788232559002 .flowchart-label text{text-anchor:middle;}#mermaid-1788232559002 .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-1788232559002 .node .label{text-align:center;}#mermaid-1788232559002 .node.clickable{cursor:pointer;}#mermaid-1788232559002 .arrowheadPath{fill:lightgrey;}#mermaid-1788232559002 .edgePath .path{stroke:#8B5CF6;stroke-width:2.0px;}#mermaid-1788232559002 .flowchart-link{stroke:#8B5CF6;fill:none;}#mermaid-1788232559002 .edgeLabel{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}#mermaid-1788232559002 .edgeLabel rect{opacity:0.5;background-color:hsl(0, 0%, 34.4117647059%);fill:hsl(0, 0%, 34.4117647059%);}#mermaid-1788232559002 .labelBkg{background-color:rgba(87.75, 87.75, 87.75, 0.5);}#mermaid-1788232559002 .cluster rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:rgba(255, 255, 255, 0.25);stroke-width:1px;}#mermaid-1788232559002 .cluster text{fill:#F9FFFE;}#mermaid-1788232559002 .cluster span,#mermaid-1788232559002 p{color:#F9FFFE;}#mermaid-1788232559002 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:JetBrains Mono,monospace;font-size:12px;background:#101018;border:1px solid rgba(255, 255, 255, 0.25);border-radius:2px;pointer-events:none;z-index:100;}#mermaid-1788232559002 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#ccc;}#mermaid-1788232559002 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="mermaid-1788232559002_flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1788232559002_flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1788232559002_flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1788232559002_flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1788232559002_flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1788232559002_flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M10,0L10,4.167C10,8.333,10,16.667,10,24.117C10,31.567,10,38.133,10,41.417L10,44.7" id="L-U-FE-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-U LE-FE" style="fill:none;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M10,50L6.667,54.167C3.333,58.333,-3.333,66.667,-5.328,74.18C-7.323,81.693,-4.646,88.386,-3.307,91.733L-1.968,95.079" id="L-FE-MW-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-FE LE-MW" style="fill:none;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M0,100L-1.667,104.167C-3.333,108.333,-6.667,116.667,-6.995,124.18C-7.323,131.693,-4.646,138.386,-3.307,141.733L-1.968,145.079" id="L-MW-BE-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-MW LE-BE" style="fill:none;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M0,150L-1.667,154.167C-3.333,158.333,-6.667,166.667,-6.995,174.18C-7.323,181.693,-4.646,188.386,-3.307,191.733L-1.968,195.079" id="L-BE-CFG-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-BE LE-CFG" style="fill:none;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M0,200L1.667,195.833C3.333,191.667,6.667,183.333,6.995,175.82C7.323,168.307,4.646,161.614,3.307,158.267L1.968,154.921" id="L-CFG-BE-0" class="edge-thickness-normal edge-pattern-dotted flowchart-link LS-CFG LE-BE" style="fill:none;stroke-width:2px;stroke-dasharray:3;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M0,150L1.667,145.833C3.333,141.667,6.667,133.333,6.995,125.82C7.323,118.307,4.646,111.614,3.307,108.267L1.968,104.921" id="L-BE-MW-0" class="edge-thickness-normal edge-pattern-dotted flowchart-link LS-BE LE-MW" style="fill:none;stroke-width:2px;stroke-dasharray:3;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M0,100L1.667,95.833C3.333,91.667,6.667,83.333,8.333,75.883C10,68.433,10,61.867,10,58.583L10,55.3" id="L-MW-FE-0" class="edge-thickness-normal edge-pattern-dotted flowchart-link LS-MW LE-FE" style="fill:none;stroke-width:2px;stroke-dasharray:3;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path><path d="M10,50L14.583,54.167C19.167,58.333,28.333,66.667,32.917,74.117C37.5,81.567,37.5,88.133,37.5,91.417L37.5,94.7" id="L-FE-TRK-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-FE LE-TRK" style="fill:none;" marker-end="url(#mermaid-1788232559002_flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(undefined, NaN)"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">GET /congrats</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(undefined, NaN)"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">GET /feedback</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(undefined, NaN)"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">busca conteúdo</span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default default flowchart-label" id="flowchart-U-0" data-node="true" data-id="U" transform="translate(10, 0)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Usuário<br>finaliza compra</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-FE-1" data-node="true" data-id="FE" transform="translate(10, 50)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Frontend SSR</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-MW-3" data-node="true" data-id="MW" transform="translate(0, 100)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Middleend<br>monta brick JSON</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-BE-5" data-node="true" data-id="BE" transform="translate(0, 150)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Backend<br>decide contexto</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-CFG-7" data-node="true" data-id="CFG" transform="translate(0, 200)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Config API<br>texto / ícone / link</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-TRK-15" data-node="true" data-id="TRK" transform="translate(37.5, 100)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Tracking<br>mede clique</span></div></foreignObject></g></g></g></g></g></svg></div>
+            <div class="diagram-mobile architecture-mobile" aria-label="Fluxo das camadas da arquitetura">
+                <div class="diagram-step c-green"><b>1. Frontend SSR</b>Recebe a tela de pós-compra.</div>
+                <div class="diagram-connector">↓ GET /congrats</div>
+                <div class="diagram-step c-blue"><b>2. Middleend</b>Orquestra as fontes e monta o componente.</div>
+                <div class="diagram-connector">↓ GET /feedback</div>
+                <div class="diagram-step c-red"><b>3. Backend</b>Decide o contexto e aplica o fail-safe.</div>
+                <div class="diagram-connector">↓ busca conteúdo</div>
+                <div class="diagram-step c-yellow"><b>4. Config API</b>Entrega texto, ícone e link administrados.</div>
+                <div class="diagram-connector">↑ real_state · brick JSON</div>
+                <div class="diagram-step c-orange"><b>5. Renderização + tracking</b>O frontend renderiza; o clique é medido sem travar o fluxo.</div>
+            </div>
         </div>
-      </section>
+    </section>
 
-      <!-- 11. MERMAID: SEQUENCIA -->
-      <section class="slide">
+    <!-- 11. MERMAID: SEQUENCIA -->
+    <section class="slide">
         <div class="eyebrow c-darkblue">Diagrama de sequência</div>
         <h2>O ciclo de vida de uma requisição</h2>
         <div class="mermaid-wrap">
-          <div class="mermaid">
-            sequenceDiagram
-            participant U as Usuário
-            participant FE as Frontend
-            participant MW as Middleend
-            participant BE as Backend
-            participant CFG as Config API
-            U->>FE: finaliza a compra
-            FE->>MW: GET /congrats/{id}
-            par Mono.zip em paralelo
-            MW->>BE: GET /feedback/{id}
-            BE->>CFG: busca conteúdo
-            CFG-->>BE: texto/ícone/link
-            and outras fontes
-            MW->>MW: frete, pontos...
-            end
-            MW-->>FE: brick (ou nenhum)
-            FE-->>U: tela renderizada
-          </div>
+            <div class="mermaid" data-processed="true"><svg id="mermaid-1788232559063" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="max-width: none;" viewBox="-50 -10 1050 629" role="graphics-document document" aria-roledescription="sequence"><g><line id="actor4" x1="875" y1="5" x2="875" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-4"><rect x="800" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="CFG" rx="3" ry="3" class="actor actor-top"></rect><text x="875" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="875" dy="0">Config</tspan></text></g></g><g><line id="actor3" x1="675" y1="5" x2="675" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-3"><rect x="600" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="BE" rx="3" ry="3" class="actor actor-top"></rect><text x="675" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="675" dy="0">Backend</tspan></text></g></g><g><line id="actor2" x1="475" y1="5" x2="475" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-2"><rect x="400" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="MW" rx="3" ry="3" class="actor actor-top"></rect><text x="475" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="475" dy="0">Middleend</tspan></text></g></g><g><line id="actor1" x1="275" y1="5" x2="275" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-1"><rect x="200" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="FE" rx="3" ry="3" class="actor actor-top"></rect><text x="275" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="275" dy="0">Frontend</tspan></text></g></g><g><line id="actor0" x1="75" y1="5" x2="75" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-0"><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="U" rx="3" ry="3" class="actor actor-top"></rect><text x="75" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="75" dy="0">Usuário</tspan></text></g></g><style>#mermaid-1788232559063{font-family:JetBrains Mono,monospace;font-size:18px;fill:#ccc;}#mermaid-1788232559063 .error-icon{fill:#a44141;}#mermaid-1788232559063 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1788232559063 .edge-thickness-normal{stroke-width:2px;}#mermaid-1788232559063 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1788232559063 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1788232559063 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1788232559063 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1788232559063 .marker{fill:#8B5CF6;stroke:#8B5CF6;}#mermaid-1788232559063 .marker.cross{stroke:#8B5CF6;}#mermaid-1788232559063 svg{font-family:JetBrains Mono,monospace;font-size:18px;}#mermaid-1788232559063 .actor{stroke:#8B5CF6;fill:#201F2E;}#mermaid-1788232559063 text.actor&gt;tspan{fill:#F4F2FA;stroke:none;}#mermaid-1788232559063 .actor-line{stroke:lightgrey;}#mermaid-1788232559063 .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#C9B6F5;}#mermaid-1788232559063 .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#C9B6F5;}#mermaid-1788232559063 #arrowhead path{fill:#C9B6F5;stroke:#C9B6F5;}#mermaid-1788232559063 .sequenceNumber{fill:black;}#mermaid-1788232559063 #sequencenumber{fill:#C9B6F5;}#mermaid-1788232559063 #crosshead path{fill:#C9B6F5;stroke:#C9B6F5;}#mermaid-1788232559063 .messageText{fill:#F4F2FA;stroke:none;}#mermaid-1788232559063 .labelBox{stroke:#81B1DB;fill:#201F2E;}#mermaid-1788232559063 .labelText,#mermaid-1788232559063 .labelText&gt;tspan{fill:#F4F2FA;stroke:none;}#mermaid-1788232559063 .loopText,#mermaid-1788232559063 .loopText&gt;tspan{fill:#C6FF3D;stroke:none;}#mermaid-1788232559063 .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:#81B1DB;fill:#81B1DB;}#mermaid-1788232559063 .note{stroke:hsl(180, 0%, 18.3529411765%);fill:#290B5E;}#mermaid-1788232559063 .noteText,#mermaid-1788232559063 .noteText&gt;tspan{fill:#F4F2FA;stroke:none;}#mermaid-1788232559063 .activation0{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}#mermaid-1788232559063 .activation1{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}#mermaid-1788232559063 .activation2{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}#mermaid-1788232559063 .actorPopupMenu{position:absolute;}#mermaid-1788232559063 .actorPopupMenuPanel{position:absolute;fill:#201F2E;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#mermaid-1788232559063 .actor-man line{stroke:#8B5CF6;fill:#201F2E;}#mermaid-1788232559063 .actor-man circle,#mermaid-1788232559063 line{stroke:#8B5CF6;fill:#201F2E;stroke-width:2px;}#mermaid-1788232559063 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><defs><symbol id="computer" width="24" height="24"><path transform="scale(.5)" d="M2 2v13h20v-13h-20zm18 11h-16v-9h16v9zm-10.228 6l.466-1h3.524l.467 1h-4.457zm14.228 3h-24l2-6h2.104l-1.33 4h18.45l-1.297-4h2.073l2 6zm-5-10h-14v-7h14v7z"></path></symbol></defs><defs><symbol id="database" fill-rule="evenodd" clip-rule="evenodd"><path transform="scale(.5)" d="M12.258.001l.256.004.255.005.253.008.251.01.249.012.247.015.246.016.242.019.241.02.239.023.236.024.233.027.231.028.229.031.225.032.223.034.22.036.217.038.214.04.211.041.208.043.205.045.201.046.198.048.194.05.191.051.187.053.183.054.18.056.175.057.172.059.168.06.163.061.16.063.155.064.15.066.074.033.073.033.071.034.07.034.069.035.068.035.067.035.066.035.064.036.064.036.062.036.06.036.06.037.058.037.058.037.055.038.055.038.053.038.052.038.051.039.05.039.048.039.047.039.045.04.044.04.043.04.041.04.04.041.039.041.037.041.036.041.034.041.033.042.032.042.03.042.029.042.027.042.026.043.024.043.023.043.021.043.02.043.018.044.017.043.015.044.013.044.012.044.011.045.009.044.007.045.006.045.004.045.002.045.001.045v17l-.001.045-.002.045-.004.045-.006.045-.007.045-.009.044-.011.045-.012.044-.013.044-.015.044-.017.043-.018.044-.02.043-.021.043-.023.043-.024.043-.026.043-.027.042-.029.042-.03.042-.032.042-.033.042-.034.041-.036.041-.037.041-.039.041-.04.041-.041.04-.043.04-.044.04-.045.04-.047.039-.048.039-.05.039-.051.039-.052.038-.053.038-.055.038-.055.038-.058.037-.058.037-.06.037-.06.036-.062.036-.064.036-.064.036-.066.035-.067.035-.068.035-.069.035-.07.034-.071.034-.073.033-.074.033-.15.066-.155.064-.16.063-.163.061-.168.06-.172.059-.175.057-.18.056-.183.054-.187.053-.191.051-.194.05-.198.048-.201.046-.205.045-.208.043-.211.041-.214.04-.217.038-.22.036-.223.034-.225.032-.229.031-.231.028-.233.027-.236.024-.239.023-.241.02-.242.019-.246.016-.247.015-.249.012-.251.01-.253.008-.255.005-.256.004-.258.001-.258-.001-.256-.004-.255-.005-.253-.008-.251-.01-.249-.012-.247-.015-.245-.016-.243-.019-.241-.02-.238-.023-.236-.024-.234-.027-.231-.028-.228-.031-.226-.032-.223-.034-.22-.036-.217-.038-.214-.04-.211-.041-.208-.043-.204-.045-.201-.046-.198-.048-.195-.05-.19-.051-.187-.053-.184-.054-.179-.056-.176-.057-.172-.059-.167-.06-.164-.061-.159-.063-.155-.064-.151-.066-.074-.033-.072-.033-.072-.034-.07-.034-.069-.035-.068-.035-.067-.035-.066-.035-.064-.036-.063-.036-.062-.036-.061-.036-.06-.037-.058-.037-.057-.037-.056-.038-.055-.038-.053-.038-.052-.038-.051-.039-.049-.039-.049-.039-.046-.039-.046-.04-.044-.04-.043-.04-.041-.04-.04-.041-.039-.041-.037-.041-.036-.041-.034-.041-.033-.042-.032-.042-.03-.042-.029-.042-.027-.042-.026-.043-.024-.043-.023-.043-.021-.043-.02-.043-.018-.044-.017-.043-.015-.044-.013-.044-.012-.044-.011-.045-.009-.044-.007-.045-.006-.045-.004-.045-.002-.045-.001-.045v-17l.001-.045.002-.045.004-.045.006-.045.007-.045.009-.044.011-.045.012-.044.013-.044.015-.044.017-.043.018-.044.02-.043.021-.043.023-.043.024-.043.026-.043.027-.042.029-.042.03-.042.032-.042.033-.042.034-.041.036-.041.037-.041.039-.041.04-.041.041-.04.043-.04.044-.04.046-.04.046-.039.049-.039.049-.039.051-.039.052-.038.053-.038.055-.038.056-.038.057-.037.058-.037.06-.037.061-.036.062-.036.063-.036.064-.036.066-.035.067-.035.068-.035.069-.035.07-.034.072-.034.072-.033.074-.033.151-.066.155-.064.159-.063.164-.061.167-.06.172-.059.176-.057.179-.056.184-.054.187-.053.19-.051.195-.05.198-.048.201-.046.204-.045.208-.043.211-.041.214-.04.217-.038.22-.036.223-.034.226-.032.228-.031.231-.028.234-.027.236-.024.238-.023.241-.02.243-.019.245-.016.247-.015.249-.012.251-.01.253-.008.255-.005.256-.004.258-.001.258.001zm-9.258 20.499v.01l.001.021.003.021.004.022.005.021.006.022.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.023.018.024.019.024.021.024.022.025.023.024.024.025.052.049.056.05.061.051.066.051.07.051.075.051.079.052.084.052.088.052.092.052.097.052.102.051.105.052.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.048.144.049.147.047.152.047.155.047.16.045.163.045.167.043.171.043.176.041.178.041.183.039.187.039.19.037.194.035.197.035.202.033.204.031.209.03.212.029.216.027.219.025.222.024.226.021.23.02.233.018.236.016.24.015.243.012.246.01.249.008.253.005.256.004.259.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.021.224-.024.22-.026.216-.027.212-.028.21-.031.205-.031.202-.034.198-.034.194-.036.191-.037.187-.039.183-.04.179-.04.175-.042.172-.043.168-.044.163-.045.16-.046.155-.046.152-.047.148-.048.143-.049.139-.049.136-.05.131-.05.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.053.083-.051.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.05.023-.024.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.023.01-.022.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.127l-.077.055-.08.053-.083.054-.085.053-.087.052-.09.052-.093.051-.095.05-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.045-.118.044-.12.043-.122.042-.124.042-.126.041-.128.04-.13.04-.132.038-.134.038-.135.037-.138.037-.139.035-.142.035-.143.034-.144.033-.147.032-.148.031-.15.03-.151.03-.153.029-.154.027-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.01-.179.008-.179.008-.181.006-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.006-.179-.008-.179-.008-.178-.01-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.027-.153-.029-.151-.03-.15-.03-.148-.031-.146-.032-.145-.033-.143-.034-.141-.035-.14-.035-.137-.037-.136-.037-.134-.038-.132-.038-.13-.04-.128-.04-.126-.041-.124-.042-.122-.042-.12-.044-.117-.043-.116-.045-.113-.045-.112-.046-.109-.047-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.05-.093-.052-.09-.051-.087-.052-.085-.053-.083-.054-.08-.054-.077-.054v4.127zm0-5.654v.011l.001.021.003.021.004.021.005.022.006.022.007.022.009.022.01.022.011.023.012.023.013.023.015.024.016.023.017.024.018.024.019.024.021.024.022.024.023.025.024.024.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.052.11.051.114.051.119.052.123.05.127.051.131.05.135.049.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.044.171.042.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.022.23.02.233.018.236.016.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.012.241-.015.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.048.139-.05.136-.049.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.051.051-.049.023-.025.023-.024.021-.025.02-.024.019-.024.018-.024.017-.024.015-.023.014-.023.013-.024.012-.022.01-.023.01-.023.008-.022.006-.022.006-.022.004-.021.004-.022.001-.021.001-.021v-4.139l-.077.054-.08.054-.083.054-.085.052-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.044-.118.044-.12.044-.122.042-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.035-.143.033-.144.033-.147.033-.148.031-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.009-.179.009-.179.007-.181.007-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.007-.179-.007-.179-.009-.178-.009-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.031-.146-.033-.145-.033-.143-.033-.141-.035-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.04-.126-.041-.124-.042-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.051-.093-.051-.09-.051-.087-.053-.085-.052-.083-.054-.08-.054-.077-.054v4.139zm0-5.666v.011l.001.02.003.022.004.021.005.022.006.021.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.024.018.023.019.024.021.025.022.024.023.024.024.025.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.051.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.043.171.043.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.021.23.02.233.018.236.017.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.013.241-.014.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.049.139-.049.136-.049.131-.051.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.049.023-.025.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.022.01-.023.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.153l-.077.054-.08.054-.083.053-.085.053-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.048-.105.048-.106.048-.109.046-.111.046-.114.046-.115.044-.118.044-.12.043-.122.043-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.034-.143.034-.144.033-.147.032-.148.032-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.024-.161.024-.162.023-.163.023-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.01-.178.01-.179.009-.179.007-.181.006-.182.006-.182.004-.184.003-.184.001-.185.001-.185-.001-.184-.001-.184-.003-.182-.004-.182-.006-.181-.006-.179-.007-.179-.009-.178-.01-.176-.01-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.023-.162-.023-.161-.024-.159-.024-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.032-.146-.032-.145-.033-.143-.034-.141-.034-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.041-.126-.041-.124-.041-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.048-.105-.048-.102-.048-.1-.05-.097-.049-.095-.051-.093-.051-.09-.052-.087-.052-.085-.053-.083-.053-.08-.054-.077-.054v4.153zm8.74-8.179l-.257.004-.254.005-.25.008-.247.011-.244.012-.241.014-.237.016-.233.018-.231.021-.226.022-.224.023-.22.026-.216.027-.212.028-.21.031-.205.032-.202.033-.198.034-.194.036-.191.038-.187.038-.183.04-.179.041-.175.042-.172.043-.168.043-.163.045-.16.046-.155.046-.152.048-.148.048-.143.048-.139.049-.136.05-.131.05-.126.051-.123.051-.118.051-.114.052-.11.052-.106.052-.101.052-.096.052-.092.052-.088.052-.083.052-.079.052-.074.051-.07.052-.065.051-.06.05-.056.05-.051.05-.023.025-.023.024-.021.024-.02.025-.019.024-.018.024-.017.023-.015.024-.014.023-.013.023-.012.023-.01.023-.01.022-.008.022-.006.023-.006.021-.004.022-.004.021-.001.021-.001.021.001.021.001.021.004.021.004.022.006.021.006.023.008.022.01.022.01.023.012.023.013.023.014.023.015.024.017.023.018.024.019.024.02.025.021.024.023.024.023.025.051.05.056.05.06.05.065.051.07.052.074.051.079.052.083.052.088.052.092.052.096.052.101.052.106.052.11.052.114.052.118.051.123.051.126.051.131.05.136.05.139.049.143.048.148.048.152.048.155.046.16.046.163.045.168.043.172.043.175.042.179.041.183.04.187.038.191.038.194.036.198.034.202.033.205.032.21.031.212.028.216.027.22.026.224.023.226.022.231.021.233.018.237.016.241.014.244.012.247.011.25.008.254.005.257.004.26.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.022.224-.023.22-.026.216-.027.212-.028.21-.031.205-.032.202-.033.198-.034.194-.036.191-.038.187-.038.183-.04.179-.041.175-.042.172-.043.168-.043.163-.045.16-.046.155-.046.152-.048.148-.048.143-.048.139-.049.136-.05.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.05.051-.05.023-.025.023-.024.021-.024.02-.025.019-.024.018-.024.017-.023.015-.024.014-.023.013-.023.012-.023.01-.023.01-.022.008-.022.006-.023.006-.021.004-.022.004-.021.001-.021.001-.021-.001-.021-.001-.021-.004-.021-.004-.022-.006-.021-.006-.023-.008-.022-.01-.022-.01-.023-.012-.023-.013-.023-.014-.023-.015-.024-.017-.023-.018-.024-.019-.024-.02-.025-.021-.024-.023-.024-.023-.025-.051-.05-.056-.05-.06-.05-.065-.051-.07-.052-.074-.051-.079-.052-.083-.052-.088-.052-.092-.052-.096-.052-.101-.052-.106-.052-.11-.052-.114-.052-.118-.051-.123-.051-.126-.051-.131-.05-.136-.05-.139-.049-.143-.048-.148-.048-.152-.048-.155-.046-.16-.046-.163-.045-.168-.043-.172-.043-.175-.042-.179-.041-.183-.04-.187-.038-.191-.038-.194-.036-.198-.034-.202-.033-.205-.032-.21-.031-.212-.028-.216-.027-.22-.026-.224-.023-.226-.022-.231-.021-.233-.018-.237-.016-.241-.014-.244-.012-.247-.011-.25-.008-.254-.005-.257-.004-.26-.001-.26.001z"></path></symbol></defs><defs><symbol id="clock" width="24" height="24"><path transform="scale(.5)" d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.848 12.459c.202.038.202.333.001.372-1.907.361-6.045 1.111-6.547 1.111-.719 0-1.301-.582-1.301-1.301 0-.512.77-5.447 1.125-7.445.034-.192.312-.181.343.014l.985 6.238 5.394 1.011z"></path></symbol></defs><defs><marker id="arrowhead" refX="7.9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="4" refY="4.5"><path fill="none" stroke="#000000" stroke-width="1pt" d="M 1,2 L 6,7 M 6,2 L 1,7" style="stroke-dasharray: 0, 0;"></path></marker></defs><defs><marker id="filled-head" refX="15.5" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><g><line x1="391" y1="171" x2="886" y2="171" class="loopLine"></line><line x1="886" y1="171" x2="886" y2="513" class="loopLine"></line><line x1="391" y1="513" x2="886" y2="513" class="loopLine"></line><line x1="391" y1="171" x2="391" y2="513" class="loopLine"></line><line x1="391" y1="365" x2="886" y2="365" class="loopLine" style="stroke-dasharray: 3, 3;"></line><polygon points="391,171 441,171 441,184 432.6,191 391,191" class="labelBox"></polygon><text x="416" y="184" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="labelText" style="font-size: 16px; font-weight: 400;">par</text><text x="663.5" y="189" text-anchor="middle" class="loopText" style="font-size: 16px; font-weight: 400;"><tspan x="663.5">[Mono.zip em paralelo]</tspan></text><text x="638.5" y="383" text-anchor="middle" class="loopText" style="font-size: 16px; font-weight: 400;">[outras fontes]</text></g><text x="174" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">finaliza a compra</text><line x1="76" y1="113" x2="271" y2="113" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="374" y="128" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">GET /congrats</text><line x1="276" y1="161" x2="471" y2="161" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="574" y="221" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">GET /feedback</text><line x1="476" y1="254" x2="671" y2="254" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="774" y="269" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">busca conteúdo</text><line x1="676" y1="302" x2="871" y2="302" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="777" y="317" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">conteúdo</text><line x1="874" y1="350" x2="679" y2="350" class="messageLine1" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="stroke-dasharray: 3, 3; fill: none;"></line><text x="476" y="410" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">frete, pontos...</text><path d="M 476,443 C 536,433 536,473 476,463" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></path><text x="377" y="528" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">brick ou vazio</text><line x1="474" y1="561" x2="279" y2="561" class="messageLine1" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="stroke-dasharray: 3, 3; fill: none;"></line><text x="177" y="576" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">tela renderizada</text><line x1="274" y1="609" x2="79" y2="609" class="messageLine1" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="stroke-dasharray: 3, 3; fill: none;"></line></svg></div>
+            <div class="diagram-mobile sequence-mobile" aria-label="Sequência resumida de uma requisição">
+                <div class="sequence-row"><strong>Usuário</strong><span>finaliza a compra</span></div>
+                <div class="sequence-row"><strong>Frontend</strong><span>GET /congrats</span></div>
+                <div class="sequence-row"><strong>Middleend</strong><span>inicia Mono.zip em paralelo</span></div>
+                <div class="sequence-row"><strong>Backend</strong><span>GET /feedback e busca contexto</span></div>
+                <div class="sequence-row"><strong>Config</strong><span>devolve conteúdo ou fallback</span></div>
+                <div class="sequence-row"><strong>Frontend</strong><span>renderiza o brick (ou nenhum)</span></div>
+            </div>
         </div>
-      </section>
+    </section>
 
-      <!-- 12. QUEM DECIDE VS QUEM RENDERIZA -->
-      <section class="slide">
+    <!-- 12. QUEM DECIDE VS QUEM RENDERIZA -->
+    <section class="slide">
         <div class="eyebrow c-tdcviolet">Conceito-chave</div>
         <h2>Quem decide não é quem desenha</h2>
         <div class="grid cols-2">
-          <div class="card tdc-blue">
-            <h3>Backend — decide e busca dados</h3>
-            <p>
-              Recebe o contexto da compra, verifica se o item pertence a uma
-              categoria regulamentada, busca o texto na Config API e devolve um
-              campo <code>meusDireitos</code> — populado ou vazio.
-            </p>
-          </div>
-          <div class="card">
-            <h3>Middleend — só renderiza</h3>
-            <p>
-              Lê o campo. Se estiver populado, monta o brick. Se estiver vazio,
-              ignora. O middleend nunca decide <em>por que</em> o card apareceu
-              — só <em>como</em> ele aparece.
-            </p>
-          </div>
+            <div class="card tdc-blue">
+                <h3>Backend — decide e busca dados</h3>
+                <p>
+                    Recebe o contexto da compra, verifica se o item pertence a uma
+                    categoria regulamentada, busca o texto na Config API e devolve um
+                    campo <code>meusDireitos</code> — populado ou vazio.
+                </p>
+            </div>
+            <div class="card">
+                <h3>Middleend — só renderiza</h3>
+                <p>
+                    Lê o campo. Se estiver populado, monta o brick. Se estiver vazio,
+                    ignora. O middleend nunca decide <em>por que</em> o card apareceu
+                    — só <em>como</em> ele aparece.
+                </p>
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.6rem">
-          Essa separação de responsabilidade é o que permite os dois times
-          evoluírem sem se travar um no outro.
+            Essa separação de responsabilidade é o que permite os dois times
+            evoluírem sem se travar um no outro.
         </p>
-      </section>
+    </section>
 
-      <!-- 13. STRATEGY + FACTORY -->
-      <section class="slide">
+    <!-- 13. STRATEGY + FACTORY -->
+    <section class="slide">
         <div class="eyebrow c-tdcviolet">Design de código</div>
         <h2>Strategy + Factory + switch exaustivo</h2>
         <div class="grid cols-2">
-          <div class="card c-tdcviolet">
-            <h3>A estratégia</h3>
-            <pre
-              style="max-height: none"
-            ><span class="kw">public class</span> RightsCardStrategy
+            <div class="card c-tdcviolet">
+                <h3>A estratégia</h3>
+                <pre style="max-height: none"><span class="kw">public class</span> RightsCardStrategy
     <span class="kw">implements</span> CardStrategy {
 
   <span class="kw">public boolean</span> handles(CardType t) {
@@ -1446,12 +1664,10 @@
     <span class="com">// ícone, título, deeplink</span>
   }
 }</pre>
-          </div>
-          <div class="card c-tdcviolet">
-            <h3>O dispatcher — switch exaustivo</h3>
-            <pre
-              style="max-height: none"
-            ><span class="kw">return switch</span> (cardType) {
+            </div>
+            <div class="card c-tdcviolet">
+                <h3>O dispatcher — switch exaustivo</h3>
+                <pre style="max-height: none"><span class="kw">return switch</span> (cardType) {
   <span class="kw">case</span> MEUS_DIREITOS -&gt;
       rightsCardStrategy.buildBrick(ctx);
   <span class="kw">case</span> FRETE_GRATIS  -&gt;
@@ -1460,57 +1676,53 @@
       recommendedStrategy.buildBrick(ctx);
   <span class="com">// esquecer um case aqui NÃO COMPILA</span>
 };</pre>
-          </div>
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.2rem">
-          Segurança em tempo de compilação: adicionar um card novo sem registrar
-          o case quebra o <b>build</b> — não a produção. Essa é a "fonte única
-          de verdade" que decide se um card renderiza.
+            Segurança em tempo de compilação: adicionar um card novo sem registrar
+            o case quebra o <b>build</b> — não a produção. Essa é a "fonte única
+            de verdade" que decide se um card renderiza.
         </p>
-      </section>
+    </section>
 
-      <!-- 14. CONTRATO ADITIVO -->
-      <section class="slide">
+    <!-- 14. CONTRATO ADITIVO -->
+    <section class="slide">
         <div class="eyebrow c-blue">O contrato entre serviços</div>
         <h2>Mudanças aditivas são as únicas seguras</h2>
         <div class="grid cols-2">
-          <div class="card c-blue">
-            <h3>Antes de ativar</h3>
-            <pre
-              style="max-height: none"
-            ><span class="tok">"real_state"</span>: {
+            <div class="card c-blue">
+                <h3>Antes de ativar</h3>
+                <pre style="max-height: none"><span class="tok">"real_state"</span>: {
   <span class="str">"meusDireitos"</span>: {}
 }</pre>
-            <p>Campo existe, vazio. Middleend ignora. Zero risco.</p>
-          </div>
-          <div class="card c-blue">
-            <h3>Depois de ativar</h3>
-            <pre
-              style="max-height: none"
-            ><span class="tok">"real_state"</span>: {
+                <p>Campo existe, vazio. Middleend ignora. Zero risco.</p>
+            </div>
+            <div class="card c-blue">
+                <h3>Depois de ativar</h3>
+                <pre style="max-height: none"><span class="tok">"real_state"</span>: {
   <span class="str">"meusDireitos"</span>: {
     <span class="str">"title"</span>: <span class="str">"Meus Direitos"</span>,
     <span class="str">"deadline"</span>: <span class="str">"30 dias"</span>
   }
 }</pre>
-            <p>Middleend lê o campo populado e monta o brick.</p>
-          </div>
+                <p>Middleend lê o campo populado e monta o brick.</p>
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.4rem">
-          O middleend precisa conhecer o campo novo <b>antes</b> do backend ir
-          pra produção — mudança de contrato é coisa de dois times, coordenada.
+            O middleend precisa conhecer o campo novo <b>antes</b> do backend ir
+            pra produção — mudança de contrato é coisa de dois times, coordenada.
         </p>
-      </section>
+    </section>
 
-      <!-- 15. FAN-OUT PARALELO -->
-      <section class="slide">
+    <!-- 15. FAN-OUT PARALELO -->
+    <section class="slide">
         <div class="eyebrow c-red">Antes do vilão</div>
         <h2>Como agregamos 7 fontes de dados em paralelo</h2>
         <p class="sub">
-          O middleend não espera uma fonte terminar pra chamar a próxima — ele
-          dispara todas ao mesmo tempo e junta o resultado com
-          <code>Mono.zip()</code>: recomendações, frete, pontos de fidelidade,
-          upsell, avaliação, compartilhamento e o card de "Meus Direitos".
+            O middleend não espera uma fonte terminar pra chamar a próxima — ele
+            dispara todas ao mesmo tempo e junta o resultado com
+            <code>Mono.zip()</code>: recomendações, frete, pontos de fidelidade,
+            upsell, avaliação, compartilhamento e o card de "Meus Direitos".
         </p>
         <pre style="margin-top: 1.4rem"><span class="kw">Mono</span>.zip(
     recomendacoesMono, freteMono, pontosMono,
@@ -1518,311 +1730,289 @@
     meusDireitosMono
 ).map(tuple -&gt; montarTela(tuple));</pre>
         <p class="sub" style="margin-top: 1rem">
-          <code>Mono.zip()</code> só emite quando <b>todos</b> os Monos
-          emitirem. É rápido, é elegante — e tem uma armadilha que não está em
-          nenhum tutorial de WebFlux.
+            <code>Mono.zip()</code> só emite quando <b>todos</b> os Monos
+            emitirem. É rápido, é elegante — e tem uma armadilha que não está em
+            nenhum tutorial de WebFlux.
         </p>
-      </section>
+    </section>
 
-      <!-- 16. O VILÃO -->
-      <section class="slide">
+    <!-- 16. O VILÃO -->
+    <section class="slide">
         <div class="eyebrow c-red">O vilão da palestra</div>
         <h2>
-          O perigo oculto do
-          <code style="font-family: var(--mono)">Mono.zip()</code>
+            O perigo oculto do
+            <code style="font-family: var(--mono)">Mono.zip()</code>
         </h2>
         <p class="sub">
-          Uma pergunta simples decide o destino das outras 6 chamadas:<br /><b
-            style="color: var(--text)"
-            >o que o handler retorna quando dá erro?</b
-          >
+            Uma pergunta simples decide o destino das outras 6 chamadas:<b style="color: var(--text)">o que o handler retorna quando dá erro?</b>
         </p>
         <div class="grid cols-2" style="margin-top: 1.6rem">
-          <div class="card" style="border-color: rgba(255, 107, 107, 0.4)">
-            <span class="badge bug">Mono.empty()</span>
-            <h3 style="margin-top: 0.6rem">Cancela o zip inteiro</h3>
-            <p>
-              Se qualquer uma das 7 fontes emitir vazio, o
-              <code>Mono.zip()</code> nunca emite — e cancela
-              <b>todas as outras seis</b>, mesmo as que já tinham respondido.
-            </p>
-          </div>
-          <div class="card" style="border-color: rgba(74, 222, 128, 0.4)">
-            <span class="badge fix">Mono.just(vazio)</span>
-            <h3 style="margin-top: 0.6rem">Segue o fluxo normalmente</h3>
-            <p>
-              Retornar um <b>objeto</b> vazio — não um <b>Mono</b> vazio —
-              dentro de <code>onErrorResume()</code> mantém as outras 6 fontes
-              intactas. O card simplesmente não aparece.
-            </p>
-          </div>
+            <div class="card" style="border-color: rgba(255, 107, 107, 0.4)">
+                <span class="badge bug">Mono.empty()</span>
+                <h3 style="margin-top: 0.6rem">Cancela o zip inteiro</h3>
+                <p>
+                    Se qualquer uma das 7 fontes emitir vazio, o
+                    <code>Mono.zip()</code> nunca emite — e cancela
+                    <b>todas as outras seis</b>, mesmo as que já tinham respondido.
+                </p>
+            </div>
+            <div class="card" style="border-color: rgba(74, 222, 128, 0.4)">
+                <span class="badge fix">Mono.just(vazio)</span>
+                <h3 style="margin-top: 0.6rem">Segue o fluxo normalmente</h3>
+                <p>
+                    Retornar um <b>objeto</b> vazio — não um <b>Mono</b> vazio —
+                    dentro de <code>onErrorResume()</code> mantém as outras 6 fontes
+                    intactas. O card simplesmente não aparece.
+                </p>
+            </div>
         </div>
         <p class="sub" style="margin-top: 1.5rem">
-          Isso não está em nenhum tutorial de WebFlux. E vai derrubar sua tela
-          inteira em produção se você não souber.
+            Isso não está em nenhum tutorial de WebFlux. E vai derrubar sua tela
+            inteira em produção se você não souber.
         </p>
-      </section>
+    </section>
 
-      <!-- 17. CODIGO: BUG -->
-      <section class="slide">
+    <!-- 17. CODIGO: BUG -->
+    <section class="slide">
         <div class="eyebrow no-dot">// O bug</div>
         <h2>Como o bug se esconde numa linha de fallback</h2>
+        <br>
         <pre><span class="kw">public</span> Mono&lt;RightsCard&gt; buscarMeusDireitos(PurchaseContext ctx) {
     <span class="kw">return</span> governanceApiClient.getContent(ctx.categoryId())
         .onErrorResume(ex -&gt; <span class="tok">Mono.empty()</span>); <span class="com">// ⚠️ cancela o zip inteiro</span>
 }</pre>
         <p class="sub" style="margin-top: 1.2rem">
-          Parece defensivo — "se der erro, retorno vazio". Mas dentro de um
-          <code>Mono.zip()</code>, <b>vazio ≠ ausência de valor</b>. Um Mono
-          vazio nunca emite, e o zip fica esperando para sempre por um valor que
-          não vai chegar → cancela tudo.
+            Parece defensivo — "se der erro, retorno vazio". Mas dentro de um
+            <code>Mono.zip()</code>, <b>vazio ≠ ausência de valor</b>. Um Mono
+            vazio nunca emite, e o zip fica esperando para sempre por um valor que
+            não vai chegar → cancela tudo.
         </p>
-      </section>
+    </section>
 
-      <!-- 18. CODIGO: FIX -->
-      <section class="slide">
+    <!-- 18. CODIGO: FIX -->
+    <section class="slide">
         <div class="eyebrow no-dot">// A correção</div>
         <h2>A correção é trocar "vazio" por "objeto vazio"</h2>
+        <br>
         <pre><span class="kw">public</span> Mono&lt;RightsCard&gt; buscarMeusDireitos(PurchaseContext ctx) {
     <span class="kw">return</span> governanceApiClient.getContent(ctx.categoryId())
         .onErrorResume(ex -&gt; <span class="tok">Mono.just(RightsCard.builder().build())</span>); <span class="com">// ✅ fail-safe real</span>
 }</pre>
         <p class="sub" style="margin-top: 1.2rem">
-          Agora o Mono <b>emite um valor</b> — só que esse valor representa
-          "nada para mostrar". O <code>zip()</code> recebe seus 7 valores, monta
-          a tela normalmente, e o middleend simplesmente não desenha o card.
+            Agora o Mono <b>emite um valor</b> — só que esse valor representa
+            "nada para mostrar". O <code>zip()</code> recebe seus 7 valores, monta
+            a tela normalmente, e o middleend simplesmente não desenha o card.
         </p>
-      </section>
+    </section>
 
-      <!-- 19. DEMO AO VIVO -->
-      <section class="slide">
+    <!-- 19. DEMO AO VIVO -->
+    <section class="slide">
         <div class="eyebrow c-orange">Ao vivo agora</div>
         <h2>Demo: derrubando (e consertando) o zip()</h2>
         <div class="grid cols-3">
-          <div class="card">
-            <span class="num">01</span>
-            <h3>Rodar com o bug</h3>
-            <p>
-              7 fontes em paralelo, 1 retorna <code>Mono.empty()</code>. Ver a
-              resposta inteira cancelada.
-            </p>
-          </div>
-          <div class="card">
-            <span class="num">02</span>
-            <h3>Aplicar o fix</h3>
-            <p>
-              Trocar por <code>onErrorResume(-&gt; Mono.just(vazio))</code>.
-              Rodar de novo.
-            </p>
-          </div>
-          <div class="card">
-            <span class="num">03</span>
-            <h3>Comparar</h3>
-            <p>
-              Mesma chamada, resposta completa. Ver o brick sendo montado (ou
-              não) na tela.
-            </p>
-          </div>
+            <div class="card">
+                <span class="num">01</span>
+                <h3>Rodar com o bug</h3>
+                <p>
+                    7 fontes em paralelo, 1 retorna <code>Mono.empty()</code>. Ver a
+                    resposta inteira cancelada.
+                </p>
+            </div>
+            <div class="card">
+                <span class="num">02</span>
+                <h3>Aplicar o fix</h3>
+                <p>
+                    Trocar por <code>onErrorResume(-&gt; Mono.just(vazio))</code>.
+                    Rodar de novo.
+                </p>
+            </div>
+            <div class="card">
+                <span class="num">03</span>
+                <h3>Comparar</h3>
+                <p>
+                    Mesma chamada, resposta completa. Ver o brick sendo montado (ou
+                    não) na tela.
+                </p>
+            </div>
         </div>
-        <p
-          class="sub"
-          style="
+        <p class="sub" style="
             margin-top: 1.8rem;
             font-family: var(--mono);
             color: var(--lime);
-          "
-        >
-          <a class="go-demo" style="color: var(--lime);" href="./demo-mono-zip.html"><b>→ Abrir Demo interativa agora!</b></a>
+          ">
+            <a class="go-demo" style="color: var(--lime);" href="./demo-mono-zip.html"><b>→ Abrir Demo interativa agora!</b></a>
         </p>
-      </section>
+    </section>
 
-      <!-- 20. RECAP DEMO -->
-      <section class="slide">
+    <!-- 20. RECAP DEMO -->
+    <section class="slide">
         <div class="eyebrow c-orange">O que a demo mostrou</div>
         <h2>Um detalhe de default, um efeito cascata</h2>
         <ul class="plain" style="margin-top: 1.8rem">
-          <li>
-            Com <code>Mono.empty()</code>: a resposta inteira nunca chega — as
-            outras 6 fontes trabalharam à toa.
-          </li>
-          <li>
-            Com <code>Mono.just(objetoVazio)</code>: a resposta chega completa,
-            e o card só não aparece.
-          </li>
-          <li>
-            A diferença é uma linha de código. O impacto é o fluxo inteiro do
-            usuário.
-          </li>
+            <li>
+                Com <code>Mono.empty()</code>: a resposta inteira nunca chega — as
+                outras 6 fontes trabalharam à toa.
+            </li>
+            <li>
+                Com <code>Mono.just(objetoVazio)</code>: a resposta chega completa,
+                e o card só não aparece.
+            </li>
+            <li>
+                A diferença é uma linha de código. O impacto é o fluxo inteiro do
+                usuário.
+            </li>
         </ul>
-      </section>
+    </section>
 
-      <!-- 21. CONCEITO: FEATURE FLAG -->
-      <section class="slide">
+    <!-- 21. CONCEITO: FEATURE FLAG -->
+    <section class="slide">
         <div class="eyebrow c-green">Conceito rápido</div>
         <h2>O que é uma feature flag?</h2>
         <div class="concept-row">
-          <div class="concept-card c-green">
-            <span class="icon">🎛️</span>
-            <h3>Um interruptor remoto pro código</h3>
-            <p>
-              Uma configuração <b>externa ao código</b> decide, em tempo real,
-              se um trecho roda ou não em produção. Trocar o valor não pede
-              deploy — é uma chamada de API ou um clique num painel.
-            </p>
-          </div>
-          <div class="concept-card c-green">
-            <span class="icon">🛟</span>
-            <h3>Por que isso importa aqui</h3>
-            <p>
-              O card "Meus Direitos" nasce atrás de uma flag: liga por país ou
-              categoria, aos poucos — e se algo der errado, desligar é
-              instantâneo, sem esperar um novo deploy.
-            </p>
-          </div>
+            <div class="concept-card c-green">
+                <span class="icon">🎛️</span>
+                <h3>Um interruptor remoto pro código</h3>
+                <p>
+                    Uma configuração <b>externa ao código</b> decide, em tempo real,
+                    se um trecho roda ou não em produção. Trocar o valor não pede
+                    deploy — é uma chamada de API ou um clique num painel.
+                </p>
+            </div>
+            <div class="concept-card c-green">
+                <span class="icon">🛟</span>
+                <h3>Por que isso importa aqui</h3>
+                <p>
+                    O card "Meus Direitos" nasce atrás de uma flag: liga por país ou
+                    categoria, aos poucos — e se algo der errado, desligar é
+                    instantâneo, sem esperar um novo deploy.
+                </p>
+            </div>
         </div>
-        <pre
-          style="margin-top: 1.4rem; max-height: none"
-        ><span class="kw">if</span> (featureFlags.isEnabled(<span class="str">"ff-meus-direitos"</span>, ctx.categoryId())) {
+        <pre style="margin-top: 1.4rem; max-height: none"><span class="kw">if</span> (featureFlags.isEnabled(<span class="str">"ff-meus-direitos"</span>, ctx.categoryId())) {
     <span class="com">// busca conteúdo e monta o card</span>
 }</pre>
         <p class="sub" style="margin-top: 1rem">
-          Guarde esse conceito — ele volta duas vezes: no obstáculo do bot de
-          review e na hora de falar de deploy.
+            Guarde esse conceito — ele volta duas vezes: no obstáculo do bot de
+            review e na hora de falar de deploy.
         </p>
-      </section>
+    </section>
 
-      <!-- 22. BOT DE REVIEW -->
-      <section class="slide">
+    <!-- 22. BOT DE REVIEW -->
+    <section class="slide">
         <div class="eyebrow c-yellow">Obstáculo bônus</div>
         <h2>Ferramentas de review não têm contexto de arquitetura</h2>
         <div class="card" style="margin-top: 1.6rem">
-          <p>
-            Um bot de code review apontou: "essa chamada de feature flag não tem
-            try-catch — se lançar exceção, quebra tudo."
-          </p>
-          <p style="margin-top: 0.8rem">
-            Investigando o cliente de feature flag: o try-catch já existia, uma
-            camada abaixo, fail-closed por design. O bot analisou o arquivo
-            isolado, sem ver o cliente inteiro.
-          </p>
+            <p>
+                Um bot de code review apontou: "essa chamada de feature flag não tem
+                try-catch — se lançar exceção, quebra tudo."
+            </p>
+            <p style="margin-top: 0.8rem">
+                Investigando o cliente de feature flag: o try-catch já existia, uma
+                camada abaixo, fail-closed por design. O bot analisou o arquivo
+                isolado, sem ver o cliente inteiro.
+            </p>
         </div>
         <p class="sub" style="margin-top: 1.4rem">
-          Saber quando confiar na ferramenta e quando questionar é parte do
-          trabalho — não terceirizável.
+            Saber quando confiar na ferramenta e quando questionar é parte do
+            trabalho — não terceirizável.
         </p>
-      </section>
+    </section>
 
-      <!-- 23. DEPLOY -->
-      <section class="slide">
+    <!-- 23. DEPLOY -->
+    <section class="slide">
         <div class="eyebrow c-blue">O que ninguém te conta no tutorial</div>
         <h2>Deploy é parte da feature</h2>
         <ul class="plain" style="margin-top: 1.8rem">
-          <li>
-            O middleend precisa conhecer o campo novo <b>antes</b> do backend ir
-            pra produção.
-          </li>
-          <li>
-            Esquecer um <code>case</code> no switch exaustivo não sobe — o
-            compilador barra.
-          </li>
-          <li>
-            A ordem de deploy, a feature flag e o plano de rollback são
-            desenhados junto com o código, não depois.
-          </li>
+            <li>
+                O middleend precisa conhecer o campo novo <b>antes</b> do backend ir
+                pra produção.
+            </li>
+            <li>
+                Esquecer um <code>case</code> no switch exaustivo não sobe — o
+                compilador barra.
+            </li>
+            <li>
+                A ordem de deploy, a feature flag e o plano de rollback são
+                desenhados junto com o código, não depois.
+            </li>
         </ul>
-      </section>
+    </section>
 
-      <!-- 23-27. AS 5 DESCOBERTAS -->
-      <section class="slide" id="lesson-1">
+    <!-- 23-27. AS 5 DESCOBERTAS -->
+    <section class="slide" id="lesson-1">
         <div class="lesson-num">01 / 05</div>
         <p class="big-lesson">
-          Uma hora mapeando o fluxo vale mais do que um dia de código no lugar
-          errado.
+            Uma hora mapeando o fluxo vale mais do que um dia de código no lugar
+            errado.
         </p>
-      </section>
-      <section class="slide" id="lesson-2">
+    </section>
+    <section class="slide" id="lesson-2">
         <div class="lesson-num">02 / 05</div>
         <p class="big-lesson">
-          Em sistemas distribuídos, mudanças aditivas são as únicas mudanças
-          seguras.
+            Em sistemas distribuídos, mudanças aditivas são as únicas mudanças
+            seguras.
         </p>
-      </section>
-      <section class="slide" id="lesson-3">
+    </section>
+    <section class="slide" id="lesson-3">
         <div class="lesson-num">03 / 05</div>
         <p class="big-lesson">
-          Mono.empty() dentro de zip() cancela tudo. Isso não está no tutorial.
+            Mono.empty() dentro de zip() cancela tudo. Isso não está no tutorial.
         </p>
-      </section>
-      <section class="slide" id="lesson-4">
+    </section>
+    <section class="slide" id="lesson-4">
         <div class="lesson-num">04 / 05</div>
         <p class="big-lesson">
-          Ferramentas de review precisam de contexto. Saiba quando confiar e
-          quando questionar.
+            Ferramentas de review precisam de contexto. Saiba quando confiar e
+            quando questionar.
         </p>
-      </section>
-      <section class="slide" id="lesson-5">
+    </section>
+    <section class="slide" id="lesson-5">
         <div class="lesson-num">05 / 05</div>
         <p class="big-lesson">
-          Deploy é parte da feature. Ordem, flags e rollback não são detalhe —
-          são entrega.
+            Deploy é parte da feature. Ordem, flags e rollback não são detalhe —
+            são entrega.
         </p>
-      </section>
+    </section>
 
-      <!-- 29. CITAÇÃO -->
-      <section
-        class="slide slide-capa"
-        style="align-items: center; text-align: center"
-      >
-        <div
-          class="deco-circle"
-          style="
+    <!-- 29. CITAÇÃO -->
+    <section class="slide slide-capa quote-slide" style="align-items: center; text-align: center">
+        <div class="deco-circle" style="
             width: 260px;
             height: 260px;
             top: -80px;
             left: -60px;
-            border-color: rgba(108, 53, 217, 0.35);
-          "
-        ></div>
-        <div
-          class="deco-circle"
-          style="
+            border-color: rgba(238, 86, 175, 0.28);
+          "></div>
+        <div class="deco-circle" style="
             width: 160px;
             height: 160px;
             bottom: -40px;
             right: 6vw;
-            border-color: rgba(201, 182, 245, 0.3);
-          "
-        ></div>
-        <p
-          style="
+            border-color: rgba(238, 86, 175, 0.18);
+          "></div>
+        <p class="closing-quote" style="
             font-family: var(--display);
             font-weight: 600;
-            font-size: clamp(1.8rem, 4.2vw, 3.2rem);
+            font-size: clamp(2.2rem, 5vw, 4rem);
             line-height: 1.3;
             max-width: 26ch;
             margin: 0 auto;
-          "
-        >
-          "A tecnologia move o <br> mundo para frente."
+          ">
+            "A tecnologia move o <br> mundo para frente."
         </p>
-        <p
-          class="sub"
-          style="
+        <p class="sub" style="
             margin-top: 1.5rem;
             font-family: var(--mono);
             color: var(--violet-light);
             text-align: center;
             max-width: none;
-          "
-        >
-          — Steve Jobs
+          ">
+            — Steve Jobs
         </p>
-      </section>
+    </section>
 
-      <!-- 30. MUITO OBRIGADA -->
-      <section
-        class="slide slide-capa"
-        style="
+    <!-- 30. MUITO OBRIGADA -->
+    <section class="slide slide-capa" style="
           background:
             radial-gradient(
               1100px 760px at 90% -8%,
@@ -1840,225 +2030,154 @@
               transparent 70%
             ),
             var(--bg);
-        "
-      >
-        <div
-          class="deco-circle"
-          style="
+        ">
+        <div class="deco-circle" style="
             width: 300px;
             height: 300px;
             bottom: -100px;
             left: -60px;
             border-color: rgba(238, 86, 175, 0.28);
-          "
-        ></div>
+          "></div>
         <div class="eyebrow">Fim de faixa</div>
         <h1 style="font-size: clamp(2rem, 5vw, 3.6rem)">Muito obrigada!</h1>
         <p class="sub">
-          Perguntas, café ou stickers — bora conversar. Quem está online também
-          pode me chamar por aqui:
+            Perguntas, café ou stickers — bora conversar. Quem está online também
+            pode me chamar por aqui:
         </p>
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 1.6rem;
-            margin-top: 1.8rem;
-          "
-        >
-          <div
-            id="linkedin-qr"
-            style="
-              background: #fff;
-              padding: 10px;
-              border-radius: 12px;
-              width: 132px;
-              height: 132px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              flex-shrink: 0;
-            "
-          ></div>
-          <div>
-            <p
-              class="sub"
-              style="
+        <div class="resource-list">
+            <div class="resource-row">
+            <div id="linkedin-qr" class="resource-qr" title="https://www.linkedin.com/in/larissa-a-souza"><canvas width="112" height="112" style="display: none;"></canvas><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwCAYAAADG4PRLAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAcKADAAQAAAABAAAAcAAAAADeglGxAAAGs0lEQVR4Ae2cQY7dOAxEpwd9gGQ3uf/hZpkjZEYLAc8FsUzr2/9LAHtjiqwq0STIn0538vXjxz9//nro6/fvf1PKP3/+OuDIuxKjCDXob7Zq9vgMp3Fnef3eV55/v0Iu7ucrUA38fA9eyuCbbLcKiHN2tJ6U43AuRh3mqxw9Rzz61XYais2cmW8GP8JoTjWBoypt5KsGbtSsUaqHFUqAjipjtO9YC9RrdlaTOToOcXqXi81q6h3R2d1NjsujJpCV2tCuBm7YNKZcDWQ1NrTDz8B3vovb8e5zwvGy+TsN3q04PWfvuxtXE3h3Rd+sVw18c8Hvvm6JFcpV1V6Q64l2iym2+UZfxKkG8TO4xnea1H/argl8usIP61cDHy7w0/LhCn1iRUTriv4rL0ye5sszcU2fMdqKYy7ENT+xGiPP2bM8atYEshob2tXADZvGlKuBrMaG9uEzkHt9lXfRnPi5oTHmzBg5DeNi1CCPnIaJYvRTq9mqofGZc03gTNUW4lQDF2rGTCpff/7/miG+ysmuk+xKyuJm887qO9zs3Y5XE+iqs0GsGrhBk1yK1UBXnQ1iX/zVere/+ZlFHP36vsS1mMOSS16WQ77a1NMY9RXnYtQhjv5mU1NxjCkve64JzFZqUVw1cNHGZNP65hhzxOlvYnqOLsjiIr76nZ7LlzHV5Nnpuxg1nJ3Nw2kwpno1gazOhnY1cMOmMeXDn0IZUDtaJzrS5EWchpnlUd/ZWX2Hc/p8t1kN6js9F6sJZBU3tKuBGzaNKVcDWY0N7cNPI7jLuXfbezHG91QcY86O9BynxXgfNehvOMbamV+KZSxrR/pXtO/QqAnMdmxRXDVw0cZk0zr8TgxJOt7Z1aA8alKDtnJcLNJzGuSoTR7vVVz2TL0zDu/L8hRXE3hW5cXj1cDFG3SWXjXwrEKLx9PfRvA9uIe5x4kZ2eSN4ld9vNtpE3f1jo6f1SdP82Cs39OeWVzD1gS2Kmz8VQ3cuHkt9Ze/jYjWwJW66MpwXN5H+4pGpE89xah+hI38Tc/FVF/v72fF1QT2ymz6rAZu2riedrhCdVSj8VdcF25P5Tis4zFGDerTbvgIRy21yWkx1VT86Ow0XGyklfHVBGaqtDCmGrhwczKpVQMzVVoY8809zx1Nf8ufMb6P4hhzNnmR9ohPHuNXNIilHm1qN1tjkQb9qvHEuSbwiaq+UbMa+MZiP3FV+JfZetmTqyG7nt6ZU7uLeen7u5jm2c/kNB81GaO/c6NnTWBUmU381cBNGhWlWQ2MKrOJ//AZ6HLO7mjinJ7b83dr6F3U11iUMzkNE/GyuOie5lcNh60JdNXZIFYN3KBJLsXDTyM4utGKUDFyWow8jSm3nxWX1SCPnNk8ej796fQ7pj2Jo/8spjl3rvqpr7GawF61TZ/VwE0b19M+/AtdHc8OuvLkuDse73Ic4pye03A8xtxds/pOk3dnbc2jJjBbuUVx1cBFG5NNqxqYrdSiuPA/+nH5cq/rTmZMNRSr8X7Oajhc12pPxUV5qF95kSZ5ymGMfM2LuCsaNYFa1c3O1cDNGqbpHn4nRoMzZ7cKuBqI03tcjBrK49nhopjey3PE4Z132by3afJujdUE3lX1D+lUAz9U+LuurQbeVckP6Rx+oKv7NZMT9/MZnvrk0a8axGnMnampGi5GTeLoV1v1Nd7Pqpfldf7oWRM4qspGvmrgRs0apbrETyNGiXWfWzsa65wnnrru7r5b9bPvUBOYrdSiuGrgoo3JpnX4y+wsyeHcKojWTuR392jM3atYnt3d1FRcFKOf94xsatJ2GsQ1zZrAUWU38lUDN2rWKNVq4KgqG/lu/2kE3113Oc/c5fSTP7LJG8Wv+tzdvMvh3J0zGuSotuZRE6gV2uxcDdysYZru4VfrdTwVnDm78Y9i6s/mQdyshvL4jtSn/4qd1XA45ki75VETeKUbC2KrgQs25UpK1cAr1VoQe/gMZH66axmj7XY3cc0mlvr0K4c4jbkzeU6fGg5HvcaJsIqjvrPJi7RH/JrAUVU28lUDN2rWKNVwhY7Ar/q4JpwWcbpOGKOteuQpjjHyFMeYciKsw7kY74q0G0Y1agJZuQ3tauCGTWPKb12hHP/smlBcpEE/X/DMnuVFui7fiHPmZ46qXxN4Vr3F49XAxRt0ll418KxCi8cf/b1Q7m6tg+5yjb/rnM0xi9O8HU+xM+eawJmqLcSpBi7UjJlUDt9GPL3WIn23ZiJOe9ksz+FminYXJ3o3zZc4jdUE3tWND+lUAz9U+LuurQbeVckP6fwHrNi4sYaiY0QAAAAASUVORK5CYII=" style="display: block;"></div>
+            <div class="resource-info">
+                <p class="sub" style="
                 margin-top: 0;
                 font-family: var(--mono);
                 color: var(--violet-light);
                 max-width: none;
-              "
-            >
-              linkedin.com/in/larissa-a-souza
-            </p>
-            <p class="sub" style="margin-top: 0.5rem; max-width: none">
-              Larissa Souza · TDC São Paulo 2026
-            </p>
-          </div>
-        </div>
+              ">
+                    <a href="https://www.linkedin.com/in/larissa-a-souza" target="_blank" rel="noopener noreferrer" class="go-demo resource-link" style="color: var(--violet-light)" aria-label="Abrir perfil de Larissa Souza no LinkedIn">Perfil no LinkedIn</a>
+                </p>
+                <p class="sub" style="margin-top: 0.5rem; max-width: none">
+                    Larissa Souza · TDC São Paulo 2026
+                </p>
+            </div>
+            </div>
 
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 1.6rem;
-            margin-top: 1.6rem;
-          "
-        >
-          <div
-            id="repo-qr"
-            style="
-              background: #fff;
-              padding: 10px;
-              border-radius: 12px;
-              width: 132px;
-              height: 132px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              flex-shrink: 0;
-            "
-          ></div>
-          <div>
-            <p
-              class="sub"
-              style="
+            <div class="resource-row">
+            <div id="repo-qr" class="resource-qr" title="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos"><canvas width="112" height="112" style="display: none;"></canvas><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwCAYAAADG4PRLAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAcKADAAQAAAABAAAAcAAAAADeglGxAAAG5klEQVR4Ae3cS47cZgwE4DjwAZxdcv/DZZkjONFCwacfXTI16p5pAvSmS6VikUOCxHj8+Pbjx58/f3vyr3/++ft/xz/++Ot/LEiaxKdYeXElr3qxsZV6jBXfidXnDP9+9nLevX8HZoDvP6PTCr/71pWXr2DPjvrkqT5pnuWjv3mTf9Jf5fUX6yNfwWv9s4GVrr2xZgb4xsOplHY4oQasq+q7Hd85BbvH9mmuimfSyyd/ebGxlRpeEaun+Kye2UA71RDPABsOzZLjCVV0B6fT5FlQIzZvhdczxSZN0ld4Pa1TXp9n4tnAZ3bzC7xmgF/Q9GemfPkJtdh0Xjw1SVPxeYXG2pK/Nav5DDwb+BldfmGOGeALm/sZ1vGEptNxpyg9K2dHjbHiSj36qE8+ib/qY66EU66kX/nZwLUjzZ5ngM0GtpZ7OKHpRKxBz372jFjDHd4ak4+aO3krPkkj/xE8G/iRrr1RzAzwjYbxkVK+/fzv10cCqzGeJmMqZ019wld9kr7CW4Nfl7FqPgPPBn5Gl1+YYwb4wuZ+hvU3/15o5RSk0yF/p3Br0LPCmzfFJo28ueQTTrnkU2ziUw2r52xg6mATfgbYZFCpzMN3oet6pqBHvCuvT+L1UCOvj7z6O5qKp7nUp7xqxK/ymQ20yw3xDLDh0Cz58F2oL8RX17+iV+M5kreGpLnD65+w9Zirok+aCm8ua1hjZwPXjjR7ngE2G9ha7uGPk3x5trbqdqy+sv4Vze599pnyppikl78am/Tyfr3ylbzGrvrZQLvZEM8AGw7Nkr+7kq6qogo2Vs9K7FWNuVKsNaiXNzZpEq+PmuQpfwevuWYD73TzDWJngG8whDslHH4WWjFaV3iPSSdFfteefSb/FKO/sfIpVt5YeX2SJunlE06e5k2xGz8beNadBu9mgA2GdFbi97srvJsnn/399qnGE3GHvxNrDdZZwcZag1iNnmrkxWqSz6afDbRrDfEMsOHQLPnwXahrq8gVViOvvoK/yse81unXclWTYuXNdcdfnw3PBq4dafY8A2w2sLXc+Cfyaf1Xg/356lnY484+KzWYN+nVnOV79C55PtKuXMqbPJN+9fV5NtBuNMQzwIZDs+TDn8jfWW1j0ylQYxHq1STeWPXyxsonvZoUq0asPvknvhJ7ppkNdBIN8Qyw4dAsOX4Xqsj1d53VJFyJVZN8Ul5jk0ZP9fJXYyt6/ROu1JM0m+dsYOpsE34G2GRQqczDz0KTSN7Tcbbae4z6nds+ja1ojE16NRX/q/qKpxr9K/jq17V5zgZWOvvGmhngGw+nUlr8LjSdgo+s+V5IJXbXnn1aW/JUk7wqsWr0TLy51MiL9ZQ3Nmk2/WygXWuIZ4ANh2bJhxPqqqYVltfIWHn1dzSv8LQ2/cXWXNEbK674qDHWvKtmNtBONcQzwIZDs+TSb+TPVng3q2h27dmnPme6X71bT82u17+i2ePWT2OTZ4VffR89m2t9Pxu4dqTZ8wyw2cDWcg/fha4vf/WcVvvO6dBTn1/Vcvd9Ja8a81mnGnn1CadY+TV2NnDtSLPnGWCzga3lxhOa1tazoCbxJlQjr4/8HWyu5K+mkiv5GHvHsxK71jAbaPcb4hlgw6FZcjyhilxb11xevRp59UmjPuHkI29syqW+ornqqT7hlFe9dcpveDZw7Uiz5xlgs4Gt5R7+pyZfutpiNeKrmrOzoO8VnGowV9KkPFf1yUdeT2tLGvkVzwauHWn2PANsNrC13MO/Tlpf7s9pzff326caT8SrNSmvfKWGpDdWnL7GpLnqr494zTsbaHca4hlgw6FZcvyNfFp5V1hN4k1WwfqoT7nUiK/qK7F6qk81q6lg/aues4GVzr6xZgb4xsOplFb6S00Vo6RJp+Aj5+JRjoqPmkceK/esmit5zVXRr7XOBq4dafY8A2w2sLXc+P+FrsIrz5VTcPV0qLcWefPK39GnWPk7efVJ2K/FXJt+NjB1rQk/A2wyqFTm4Weh63qmoEe8a+77iqex6hOvvxr5io+xSV/xVJOw/kljPVXNbGDqVBN+BthkUKnMwwlVVFnnq2dBffKXT3p5a67g5G9sxb+iMZf+z8Szgc/s5hd4zQC/oOnPTBlP6LOSpFOT+JQ36ROfzlfSm9dY9Yk3NunViJNeXr01bPxsoN1piGeADYdmyS8/oSYTr6fAd4+wJ8VYeePk1atJfNJUPNXoI65o1IvX2NlAu9MQzwAbDs2S4wldV9WgZ+NKrnTuEp9qTPpKDckz8RVP61Evr7+ajZ8NtDsN8Qyw4dAsOf69UEVXsWueTsFVT/VX/dXrk2pLemMrOPkbm3JVYjef2UC72RDPABsOzZJngHajIf4XJOGicMD39+EAAAAASUVORK5CYII=" style="display: block;"></div>
+            <div class="resource-info">
+                <p class="sub" style="
                 margin-top: 0;
                 font-family: var(--mono);
                 color: var(--violet-light);
                 max-width: none;
-              "
-            >
-              Material completo (slides + demo)
-            </p>
-            <p class="sub" style="margin-top: 0.4rem; max-width: none">
-              <a
-                href="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos"
-                target="_blank"
-                rel="noopener"
-                class="go-demo"
-                style="color: var(--lime)"
-                >github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos</a
-              >
-            </p>
-            <p class="sub" style="margin-top: 0.3rem; max-width: none">
-              <a
-                href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/"
-                target="_blank"
-                rel="noopener"
-                style="color: var(--violet-light)"
-                class="go-demo"
-                >Slides</a
-              >
-              ·
-              <a
-                href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html"
-                target="_blank"
-                rel="noopener"
-                style="color: var(--violet-light)"
-                class="go-demo"
-                >Demo</a
-              >
-            </p>
-          </div>
+              ">
+                    Material completo (slides + demo)
+                </p>
+                <p class="sub" style="margin-top: 0.4rem; max-width: none">
+                    <a href="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos" target="_blank" rel="noopener noreferrer" class="go-demo resource-link" style="color: var(--lime)">Repositório no GitHub</a>
+                </p>
+                <p class="sub" style="margin-top: 0.3rem; max-width: none">
+                    <a href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/" target="_blank" rel="noopener noreferrer" style="color: var(--violet-light)" class="go-demo">Slides</a>
+                    ·
+                    <a href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html" target="_blank" rel="noopener noreferrer" style="color: var(--violet-light)" class="go-demo">Demo</a>
+                </p>
+            </div>
+            </div>
         </div>
-      </section>
-    </div>
+    </section>
+</div>
 
-    <div class="footer-meta" id="footer-meta">
-      Uma feature, quatro microsserviços
-    </div>
-    <div class="progress-label" id="progress-label">01 / 30</div>
-    <div class="scrubber" id="scrubber"></div>
-    <div class="speaker-notes" id="notes"></div>
-    <button class="tap-nav prev" id="prevTap" aria-label="Slide anterior">
-      ‹
-    </button>
-    <button class="tap-nav next" id="nextTap" aria-label="Próximo slide">
-      ›
-    </button>
+<div class="footer-meta" id="footer-meta">
+    Uma feature, quatro microsserviços
+</div>
+<div class="progress-label" id="progress-label">08 / 30</div>
+<div class="scrubber" id="scrubber"><div class="bar played" style="height: 20%;"></div><div class="bar played" style="height: 79.499889%;"></div><div class="bar played" style="height: 35.332466%;"></div><div class="bar played" style="height: 75.548881%;"></div><div class="bar played" style="height: 49.646801%;"></div><div class="bar played" style="height: 67.909227%;"></div><div class="bar played" style="height: 61.992481%;"></div><div class="bar current" style="height: 77.088227%;"></div><div class="bar" style="height: 71.549709%;"></div><div class="bar" style="height: 43.804434%;"></div><div class="bar" style="height: 77.68385%;"></div><div class="bar" style="height: 28.939942%;"></div><div class="bar" style="height: 79.987574%;"></div><div class="bar" style="height: 26.518196%;"></div><div class="bar" style="height: 78.307907%;"></div><div class="bar" style="height: 41.543501%;"></div><div class="bar" style="height: 72.756384%;"></div><div class="bar" style="height: 55.13824%;"></div><div class="bar" style="height: 63.701646%;"></div><div class="bar" style="height: 66.399673%;"></div><div class="bar" style="height: 51.744961%;"></div><div class="bar" style="height: 74.58%;"></div><div class="bar" style="height: 37.680296%;"></div><div class="bar" style="height: 79.136018%;"></div><div class="bar" style="height: 22.441595%;"></div><div class="bar" style="height: 79.76519%;"></div><div class="bar" style="height: 32.959236%;"></div><div class="bar" style="height: 76.425738%;"></div><div class="bar" style="height: 47.499527%;"></div><div class="bar" style="height: 69.339412%;"></div></div>
+<div class="speaker-notes" id="notes">Primer 3/3: SDUI e bricks. Repetir a frase 'o cliente é burro' — é a mais citável do bloco.</div>
+<button class="tap-nav prev" id="prevTap" aria-label="Slide anterior">
+    ‹
+</button>
+<button class="tap-nav next" id="nextTap" aria-label="Próximo slide">
+    ›
+</button>
 
-    <script>
-      mermaid.initialize({
+<script>
+    mermaid.initialize({
         startOnLoad: false,
         theme: 'dark',
         flowchart: {
-          useMaxWidth: true,
-          htmlLabels: true,
-          nodeSpacing: 35,
-          rankSpacing: 50
+            useMaxWidth: true,
+            htmlLabels: true,
+            nodeSpacing: 35,
+            rankSpacing: 50
         },
         sequence: {
-          useMaxWidth: true,
-          boxMargin: 10,
-          messageMargin: 34,
-          boxTextMargin: 5,
-          messageFontSize: 16,
-          actorFontSize: 16,
-          noteFontSize: 14
+            useMaxWidth: true,
+            mirrorActors: false,
+            boxMargin: 10,
+            messageMargin: 34,
+            boxTextMargin: 5,
+            messageFontSize: 16,
+            actorFontSize: 16,
+            noteFontSize: 14
         },
         themeVariables: {
-          background: '#1B1B27',
-          primaryColor: '#201F2E',
-          primaryTextColor: '#F4F2FA',
-          primaryBorderColor: '#8B5CF6',
-          lineColor: '#8B5CF6',
-          secondaryColor: '#1B1B27',
-          tertiaryColor: '#101018',
-          fontFamily: 'JetBrains Mono, monospace',
-          fontSize: '18px',
-          actorBkg: '#201F2E',
-          actorBorder: '#8B5CF6',
-          actorTextColor: '#F4F2FA',
-          signalColor: '#C9B6F5',
-          signalTextColor: '#F4F2FA',
-          labelBoxBkgColor: '#201F2E',
-          labelTextColor: '#F4F2FA',
-          loopTextColor: '#C6FF3D',
-          noteBkgColor: '#290B5E',
-          noteTextColor: '#F4F2FA'
+            background: '#1B1B27',
+            primaryColor: '#201F2E',
+            primaryTextColor: '#F4F2FA',
+            primaryBorderColor: '#8B5CF6',
+            lineColor: '#8B5CF6',
+            secondaryColor: '#1B1B27',
+            tertiaryColor: '#101018',
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: '18px',
+            actorBkg: '#201F2E',
+            actorBorder: '#8B5CF6',
+            actorTextColor: '#F4F2FA',
+            signalColor: '#C9B6F5',
+            signalTextColor: '#F4F2FA',
+            labelBoxBkgColor: '#201F2E',
+            labelTextColor: '#F4F2FA',
+            loopTextColor: '#C6FF3D',
+            noteBkgColor: '#290B5E',
+            noteTextColor: '#F4F2FA'
         }
-      })
+    })
 
-      // Mermaid não "estica" um SVG pequeno pra caber no espaço, só encolhe um
-      // grande — então ajustamos manualmente a escala pra cada diagrama caber na
-      // altura disponível do slide sem cortar e sem precisar de rolagem.
-      function fitMermaidDiagrams() {
+    // Mantém os diagramas legíveis: reduzimos apenas quando a largura exige e
+    // deixamos a área rolar quando a altura da janela for menor.
+    function fitMermaidDiagrams() {
         document.querySelectorAll('.mermaid-wrap').forEach(wrap => {
-          const svg = wrap.querySelector('svg')
-          if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return
-          const vb = svg.viewBox.baseVal
-          if (!vb.width || !vb.height) return
-          const cs = getComputedStyle(wrap)
-          const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
-          const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
-          const availW = wrap.clientWidth - padX - 6
-          const availH = (parseFloat(cs.maxHeight) || 500) - padY - 6
-          const scale = Math.min(availW / vb.width, availH / vb.height)
-          svg.style.maxWidth = 'none'
-          svg.style.width = vb.width * scale + 'px'
-          svg.style.height = vb.height * scale + 'px'
+            const svg = wrap.querySelector('svg')
+            if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return
+            const vb = svg.viewBox.baseVal
+            if (!vb.width || !vb.height) return
+            const cs = getComputedStyle(wrap)
+            const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+            const availW = wrap.clientWidth - padX - 6
+            const scale = Math.min(1, availW / vb.width)
+            svg.style.maxWidth = 'none'
+            svg.style.width = vb.width * scale + 'px'
+            svg.style.height = vb.height * scale + 'px'
         })
-      }
-      mermaid
+    }
+    mermaid
         .run()
         .then(fitMermaidDiagrams)
         .catch(err => console.error('mermaid render error:', err))
-      window.addEventListener('resize', fitMermaidDiagrams)
+    window.addEventListener('resize', fitMermaidDiagrams)
 
-      const slides = document.querySelectorAll('.slide')
-      const total = slides.length
-      let idx = 0
+    const slides = document.querySelectorAll('.slide')
+    const total = slides.length
+    let idx = 0
 
-      // Permite abrir num slide específico via #N (ex: index.html#19),
-      // usado pelo link "voltar para os slides" da demo.
-      const hashSlide = parseInt(window.location.hash.replace('#', ''), 10)
-      if (!Number.isNaN(hashSlide) && hashSlide >= 1 && hashSlide <= total) {
+    // Permite abrir num slide específico via #N (ex: index.html#19),
+    // usado pelo link "voltar para os slides" da demo.
+    const hashSlide = parseInt(window.location.hash.replace('#', ''), 10)
+    if (!Number.isNaN(hashSlide) && hashSlide >= 1 && hashSlide <= total) {
         idx = hashSlide - 1
-      }
+    }
 
-      const notesBySlide = [
+    const notesBySlide = [
         'Capa. Respirar, sorrir, deixar 3 segundos de silêncio antes de falar o título.',
         'Quem sou eu. Contar de cabeça, sem ler a lista.',
         "Gancho: contrastar tutorial vs produção, como uma pergunta pro público ('quem aqui já teve que mexer em mais de um repositório pra entregar UMA funcionalidade?').",
@@ -2089,117 +2208,121 @@
         'Idem.',
         'Citação de fechamento. Deixar respirar — silêncio de 2-3 segundos antes de ler e depois de ler.',
         'Agradecer, mostrar o QR code do LinkedIn, abrir pro Q&A.'
-      ]
+    ]
 
-      function render() {
+    function render() {
         slides.forEach((s, i) => s.classList.toggle('active', i === idx))
         document.getElementById('progress-label').textContent =
-          String(idx + 1).padStart(2, '0') +
-          ' / ' +
-          String(total).padStart(2, '0')
+            String(idx + 1).padStart(2, '0') +
+            ' / ' +
+            String(total).padStart(2, '0')
         document.getElementById('notes').textContent = notesBySlide[idx] || ''
         buildScrubber()
-      }
+    }
 
-      if (window.QRCode) {
+    if (window.QRCode) {
         new QRCode(document.getElementById('linkedin-qr'), {
-          text: 'https://www.linkedin.com/in/larissa-a-souza',
-          width: 112,
-          height: 112,
-          colorDark: '#101018',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M
+            text: 'https://www.linkedin.com/in/larissa-a-souza',
+            width: 112,
+            height: 112,
+            colorDark: '#101018',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
         })
         new QRCode(document.getElementById('repo-qr'), {
-          text: 'https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos',
-          width: 112,
-          height: 112,
-          colorDark: '#101018',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M
+            text: 'https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos',
+            width: 112,
+            height: 112,
+            colorDark: '#101018',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
         })
-      }
+    }
 
-      function buildScrubber() {
+    function buildScrubber() {
         const el = document.getElementById('scrubber')
         el.innerHTML = ''
         for (let i = 0; i < total; i++) {
-          const bar = document.createElement('div')
-          bar.className =
-            'bar' + (i < idx ? ' played' : '') + (i === idx ? ' current' : '')
-          const h = 20 + Math.abs(Math.sin(i * 1.7)) * 60
-          bar.style.height = (i === idx ? Math.min(h + 20, 100) : h) + '%'
-          el.appendChild(bar)
+            const bar = document.createElement('div')
+            bar.className =
+                'bar' + (i < idx ? ' played' : '') + (i === idx ? ' current' : '')
+            const h = 20 + Math.abs(Math.sin(i * 1.7)) * 60
+            bar.style.height = (i === idx ? Math.min(h + 20, 100) : h) + '%'
+            el.appendChild(bar)
         }
-      }
+    }
 
-      function go(delta) {
+    function go(delta) {
         idx = Math.min(total - 1, Math.max(0, idx + delta))
         render()
-      }
+        if (window.innerWidth <= 860) {
+            window.scrollTo({ top: 0, behavior: 'auto' })
+        }
+    }
 
-      window.addEventListener('keydown', e => {
+    window.addEventListener('keydown', e => {
         if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) {
-          go(1)
-          e.preventDefault()
+            go(1)
+            e.preventDefault()
         }
         if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
-          go(-1)
-          e.preventDefault()
+            go(-1)
+            e.preventDefault()
         }
         if (e.key.toLowerCase() === 'n') {
-          document.getElementById('notes').classList.toggle('show')
+            document.getElementById('notes').classList.toggle('show')
         }
-      })
+    })
 
-      document.addEventListener('click', e => {
+    document.addEventListener('click', e => {
         if (e.target.closest('a')) return
         if (e.target.closest('.tap-nav')) return
         if (e.clientX > window.innerWidth / 2) {
-          go(1)
+            go(1)
         } else {
-          go(-1)
+            go(-1)
         }
-      })
+    })
 
-      document.getElementById('prevTap').addEventListener('click', e => {
+    document.getElementById('prevTap').addEventListener('click', e => {
         e.stopPropagation()
         go(-1)
-      })
-      document.getElementById('nextTap').addEventListener('click', e => {
+    })
+    document.getElementById('nextTap').addEventListener('click', e => {
         e.stopPropagation()
         go(1)
-      })
+    })
 
-      // Swipe horizontal em telas de toque — vertical fica livre para rolar o
-      // conteúdo do slide quando ele não cabe na tela.
-      let touchStartX = 0,
+    // Swipe horizontal em telas de toque — vertical fica livre para rolar o
+    // conteúdo do slide quando ele não cabe na tela.
+    let touchStartX = 0,
         touchStartY = 0
-      window.addEventListener(
+    window.addEventListener(
         'touchstart',
         e => {
-          touchStartX = e.touches[0].clientX
-          touchStartY = e.touches[0].clientY
+            touchStartX = e.touches[0].clientX
+            touchStartY = e.touches[0].clientY
         },
         { passive: true }
-      )
-      window.addEventListener(
+    )
+    window.addEventListener(
         'touchend',
         e => {
-          const dx = e.changedTouches[0].clientX - touchStartX
-          const dy = e.changedTouches[0].clientY - touchStartY
-          if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-            if (dx < 0) {
-              go(1)
-            } else {
-              go(-1)
+            const dx = e.changedTouches[0].clientX - touchStartX
+            const dy = e.changedTouches[0].clientY - touchStartY
+            if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                if (dx < 0) {
+                    go(1)
+                } else {
+                    go(-1)
+                }
             }
-          }
         },
         { passive: true }
-      )
+    )
 
-      render()
-    </script>
-  </body>
-</html>
+    render()
+</script><div class="mermaidTooltip" style="opacity: 0;"></div>
+
+
+</body></html>
