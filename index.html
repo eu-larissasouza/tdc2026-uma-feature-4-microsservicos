@@ -1,9 +1,14 @@
-<html lang="pt-BR"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Uma feature, quatro microsserviços — TDC São Paulo 2026</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+            rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -582,43 +587,36 @@
             border-radius: 16px;
             padding: 1rem 1.4rem;
             margin-top: 1.1rem;
-            overflow: auto;
-            max-height: min(70vh, calc(100vh - 13rem));
             text-align: center;
-        }
-        /* Estado Padrão: esconde a barra e impede o overflow do navegador */
-        .mermaid-wrap {
-            overflow: hidden; /* Esconde completamente qualquer barra do sistema */
-            border-radius: 16px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--violet) var(--bg-card);
-        }
-        /* Quando o mouse entra no container: ativa a rolagem e exibe a barra */
-        .mermaid-wrap:hover {
-            overflow: auto; /* Ativa a rolagem e força o SO a renderizar a barra */
-        }
-        /* Estilização da barra customizada (Chrome, Edge, Safari) */
-        .mermaid-wrap::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        .mermaid-wrap::-webkit-scrollbar-track {
-            background: var(--bg-card);
-            border-radius: 4px;
-        }
-        .mermaid-wrap::-webkit-scrollbar-thumb {
-            background: var(--violet);
-            border-radius: 4px;
-        }
-        .mermaid-wrap::-webkit-scrollbar-thumb:hover {
-            background: var(--violet-light);
+            /* Altura DEFINIDA (não só um teto) para que o SVG, com width/height
+               em 100%, tenha uma referência real de tamanho para se encaixar.
+               É isso que permite ao SVG (via viewBox + preserveAspectRatio
+               nativo) se auto-ajustar sem depender de cálculo em JS. */
+            height: min(70vh, calc(100vh - 13rem));
+            max-height: min(70vh, calc(100vh - 13rem));
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .mermaid {
             font-family: var(--mono) !important;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        /* O viewBox do Mermaid + o preserveAspectRatio padrão do SVG
+           (xMidYMid meet) fazem o "contain" sozinhos: o diagrama nunca
+           estoura nem para os lados nem para cima/baixo, em nenhuma tela. */
         .mermaid svg {
             display: block;
             margin: 0 auto;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100%;
+            max-height: 100%;
         }
         .diagram-mobile {
             display: none;
@@ -990,9 +988,11 @@
                 font-size: 1.05rem;
             }
             .mermaid-wrap {
+                height: auto;
                 max-height: none;
                 padding: 0.45rem;
                 overflow: scroll;
+                display: block;
             }
             .mermaid-wrap .mermaid {
                 display: none;
@@ -1248,12 +1248,15 @@
 </head>
 <body>
 <div class="tdc-stripe">
-    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span
+><span></span><span></span><span></span>
 </div>
 
 <div class="deck" id="deck">
     <!-- 1. CAPA -->
-    <section class="slide slide-capa slide-cover" style="
+    <section
+            class="slide slide-capa slide-cover"
+            style="
           background:
             radial-gradient(
               1100px 760px at 90% -8%,
@@ -1271,38 +1274,55 @@
               transparent 70%
             ),
             var(--bg);
-        ">
-        <div class="deco-circle" style="
+        "
+    >
+        <div
+                class="deco-circle"
+                style="
             width: 420px;
             height: 420px;
             top: -140px;
             right: -60px;
             border-color: rgba(238, 86, 175, 0.28);
-          "></div>
-        <div class="deco-circle" style="
+          "
+        ></div>
+        <div
+                class="deco-circle"
+                style="
             width: 180px;
             height: 180px;
             top: 22%;
             right: 14%;
             border-color: rgba(238, 86, 175, 0.4);
-          "></div>
-        <img class="capa-logo" src="https://cdn.thedevconf.com.br/2026/img/site/H-TDCSaoPaulo%20-%20Wth.png" alt="TDC São Paulo" onerror="this.style.display = 'none'">
+          "
+        ></div>
+        <img
+                class="capa-logo"
+                src="https://cdn.thedevconf.com.br/2026/img/site/H-TDCSaoPaulo%20-%20Wth.png"
+                alt="TDC São Paulo"
+                onerror="this.style.display = 'none'"
+        />
         <div class="capa-rule">
-          <span class="trilha-chip">Trilha Arquitetura Java · TDC São Paulo 2026</span>
+          <span class="trilha-chip"
+          >Trilha Arquitetura Java · TDC São Paulo 2026</span
+          >
             <div class="line"></div>
         </div>
         <h1 style="margin-top: 1.2rem">
-            Uma feature,<br>quatro microsserviços
+            Uma feature,<br />quatro microsserviços
         </h1>
         <p class="sub">
             Entregando funcionalidades em ecossistemas Java de alta escala.
         </p>
-        <p class="sub" style="
+        <p
+                class="sub"
+                style="
             margin-top: 2.2rem;
             color: var(--text);
             font-family: var(--mono);
             font-size: 0.95rem;
-          ">
+          "
+        >
             Larissa Souza · Software Developer, Pharma @Mercado Livre
         </p>
     </section>
@@ -1311,25 +1331,34 @@
     <section class="slide slide-bio">
         <div class="bio-side">
             <div class="bio-avatar">
-                <img src="https://media.licdn.com/dms/image/v2/D4D03AQG_bGYuIDGzgg/profile-displayphoto-crop_800_800/B4DZ7S_zSOJwAI-/0/1781656403628?e=1789603200&amp;v=beta&amp;t=_4wuMco3yMOab-tBDuRh7ZLtS0-TVaMqO3RJtVYg_M8" alt="Foto de Larissa Souza, mulher negra com cabelo crespo peso, está vestindo camiseta roxo e um sobretudo rose">
+                <img
+                        src="https://media.licdn.com/dms/image/v2/D4D03AQG_bGYuIDGzgg/profile-displayphoto-crop_800_800/B4DZ7S_zSOJwAI-/0/1781656403628?e=1789603200&v=beta&t=_4wuMco3yMOab-tBDuRh7ZLtS0-TVaMqO3RJtVYg_M8"
+                        alt="Foto de Larissa Souza, mulher negra com cabelo crespo peso, está vestindo camiseta roxo e um sobretudo rose"
+                />
             </div>
             <div class="rotated">UMA APAIXONADA PELA TECNOLOGIA</div>
         </div>
         <div class="bio-main">
-            <div class="deco-circle" style="
+            <div
+                    class="deco-circle"
+                    style="
               width: 170px;
               height: 170px;
               top: -60px;
               right: 8vw;
               border-color: rgba(108, 53, 217, 0.4);
-            "></div>
-            <div class="deco-circle" style="
+            "
+            ></div>
+            <div
+                    class="deco-circle"
+                    style="
               width: 110px;
               height: 110px;
               bottom: -30px;
               left: -30px;
               border-color: rgba(139, 92, 246, 0.25);
-            "></div>
+            "
+            ></div>
             <div class="eyebrow">Quem sou eu</div>
             <h2 style="font-size: clamp(2rem, 4vw, 3.2rem)">Larissa Souza</h2>
             <ul class="plain" style="margin-top: 1.6rem">
@@ -1350,7 +1379,7 @@
     <section class="slide">
         <div class="eyebrow c-red">O gap</div>
         <h2>
-            A maioria dos tutoriais ensina a criar serviços isolados.<br>O mundo
+            A maioria dos tutoriais ensina a criar serviços isolados.<br />O mundo
             real não é assim.
         </h2>
         <div class="grid cols-2">
@@ -1487,7 +1516,10 @@
                     prato ficar pronto, sem atender mais ninguém.
                 </p>
             </div>
-            <div class="concept-card" style="border-color: rgba(198, 255, 61, 0.35)">
+            <div
+                    class="concept-card"
+                    style="border-color: rgba(198, 255, 61, 0.35)"
+            >
                 <span class="icon">⚡</span>
                 <h3>Modelo reativo (não-bloqueante)</h3>
                 <p>
@@ -1524,7 +1556,9 @@
         <div class="grid cols-2" style="margin-top: 1.6rem">
             <div class="card c-darkgreen">
                 <h3>Estilo JAX-RS</h3>
-                <pre style="max-height: none"><span class="kw">@Path</span>(<span class="str">"/feedback"</span>)
+                <pre
+                        style="max-height: none"
+                ><span class="kw">@Path</span>(<span class="str">"/feedback"</span>)
 <span class="kw">public class</span> FeedbackResource {
   <span class="kw">@GET</span> <span class="kw">@Path</span>(<span class="str">"/{id}"</span>)
   <span class="kw">public</span> Response get(<span class="kw">@PathParam</span>(<span class="str">"id"</span>) String id) { ... }
@@ -1532,7 +1566,9 @@
             </div>
             <div class="card c-darkgreen">
                 <h3>Estilo usado nos serviços de hoje</h3>
-                <pre style="max-height: none"><span class="kw">@RestController</span>
+                <pre
+                        style="max-height: none"
+                ><span class="kw">@RestController</span>
 <span class="kw">public class</span> FeedbackController {
   <span class="kw">@GetMapping</span>(<span class="str">"/feedback/{id}"</span>)
   <span class="kw">public</span> Mono&lt;Feedback&gt; get(<span class="kw">@PathVariable</span> String id) { ... }
@@ -1586,23 +1622,23 @@
         <h2>As 5 camadas do ecossistema</h2>
         <div class="diagram-row">
             <div class="node" style="border-top-color: var(--tdc-green)">
-                <b>Backend</b>detecta contexto<br>+ fail-safe reativo
+                <b>Backend</b>detecta contexto<br />+ fail-safe reativo
             </div>
             <span class="arrow">→</span>
             <div class="node" style="border-top-color: var(--tdc-yellow)">
-                <b>Config API</b>conteúdo dinâmico<br>deploy próprio
+                <b>Config API</b>conteúdo dinâmico<br />deploy próprio
             </div>
             <span class="arrow">→</span>
             <div class="node" style="border-top-color: var(--tdc-blue-light)">
-                <b>Middleend</b>orquestra + monta<br>o componente
+                <b>Middleend</b>orquestra + monta<br />o componente
             </div>
             <span class="arrow">→</span>
             <div class="node" style="border-top-color: var(--tdc-orange)">
-                <b>Frontend SSR</b>renderiza o que<br>chegou pronto
+                <b>Frontend SSR</b>renderiza o que<br />chegou pronto
             </div>
             <span class="arrow">→</span>
             <div class="node" style="border-top-color: var(--tdc-red)">
-                <b>Tracking</b>mede clique<br>sem quebrar nada
+                <b>Tracking</b>mede clique<br />sem quebrar nada
             </div>
         </div>
         <p class="sub" style="margin-top: 1.8rem">
@@ -1616,7 +1652,17 @@
         <div class="eyebrow c-darkblue">Diagrama de arquitetura</div>
         <h2>Como as camadas se conectam</h2>
         <div class="mermaid-wrap">
-            <div class="mermaid" data-processed="true"><svg id="mermaid-1788286132830" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="max-width: none;" viewBox="-8 -8 16 16" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#mermaid-1788286132830{font-family:JetBrains Mono,monospace;font-size:18px;fill:#ccc;}#mermaid-1788286132830 .error-icon{fill:#a44141;}#mermaid-1788286132830 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1788286132830 .edge-thickness-normal{stroke-width:2px;}#mermaid-1788286132830 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1788286132830 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1788286132830 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1788286132830 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1788286132830 .marker{fill:#8B5CF6;stroke:#8B5CF6;}#mermaid-1788286132830 .marker.cross{stroke:#8B5CF6;}#mermaid-1788286132830 svg{font-family:JetBrains Mono,monospace;font-size:18px;}#mermaid-1788286132830 .label{font-family:JetBrains Mono,monospace;color:#ccc;}#mermaid-1788286132830 .cluster-label text{fill:#F9FFFE;}#mermaid-1788286132830 .cluster-label span,#mermaid-1788286132830 p{color:#F9FFFE;}#mermaid-1788286132830 .label text,#mermaid-1788286132830 span,#mermaid-1788286132830 p{fill:#ccc;color:#ccc;}#mermaid-1788286132830 .node rect,#mermaid-1788286132830 .node circle,#mermaid-1788286132830 .node ellipse,#mermaid-1788286132830 .node polygon,#mermaid-1788286132830 .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}#mermaid-1788286132830 .flowchart-label text{text-anchor:middle;}#mermaid-1788286132830 .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-1788286132830 .node .label{text-align:center;}#mermaid-1788286132830 .node.clickable{cursor:pointer;}#mermaid-1788286132830 .arrowheadPath{fill:lightgrey;}#mermaid-1788286132830 .edgePath .path{stroke:#8B5CF6;stroke-width:2.0px;}#mermaid-1788286132830 .flowchart-link{stroke:#8B5CF6;fill:none;}#mermaid-1788286132830 .edgeLabel{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}#mermaid-1788286132830 .edgeLabel rect{opacity:0.5;background-color:hsl(0, 0%, 34.4117647059%);fill:hsl(0, 0%, 34.4117647059%);}#mermaid-1788286132830 .labelBkg{background-color:rgba(87.75, 87.75, 87.75, 0.5);}#mermaid-1788286132830 .cluster rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:rgba(255, 255, 255, 0.25);stroke-width:1px;}#mermaid-1788286132830 .cluster text{fill:#F9FFFE;}#mermaid-1788286132830 .cluster span,#mermaid-1788286132830 p{color:#F9FFFE;}#mermaid-1788286132830 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:JetBrains Mono,monospace;font-size:12px;background:#101018;border:1px solid rgba(255, 255, 255, 0.25);border-radius:2px;pointer-events:none;z-index:100;}#mermaid-1788286132830 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#ccc;}#mermaid-1788286132830 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="mermaid-1788286132830_flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1788286132830_flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1788286132830_flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1788286132830_flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1788286132830_flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1788286132830_flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M10,0L10,4.167C10,8.333,10,16.667,10,24.117C10,31.567,10,38.133,10,41.417L10,44.7" id="L-U-FE-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-U LE-FE" style="fill:none;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M10,50L6.667,54.167C3.333,58.333,-3.333,66.667,-5.328,74.18C-7.323,81.693,-4.646,88.386,-3.307,91.733L-1.968,95.079" id="L-FE-MW-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-FE LE-MW" style="fill:none;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M0,100L-1.667,104.167C-3.333,108.333,-6.667,116.667,-6.995,124.18C-7.323,131.693,-4.646,138.386,-3.307,141.733L-1.968,145.079" id="L-MW-BE-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-MW LE-BE" style="fill:none;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M0,150L-1.667,154.167C-3.333,158.333,-6.667,166.667,-6.995,174.18C-7.323,181.693,-4.646,188.386,-3.307,191.733L-1.968,195.079" id="L-BE-CFG-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-BE LE-CFG" style="fill:none;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M0,200L1.667,195.833C3.333,191.667,6.667,183.333,6.995,175.82C7.323,168.307,4.646,161.614,3.307,158.267L1.968,154.921" id="L-CFG-BE-0" class="edge-thickness-normal edge-pattern-dotted flowchart-link LS-CFG LE-BE" style="fill:none;stroke-width:2px;stroke-dasharray:3;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M0,150L1.667,145.833C3.333,141.667,6.667,133.333,6.995,125.82C7.323,118.307,4.646,111.614,3.307,108.267L1.968,104.921" id="L-BE-MW-0" class="edge-thickness-normal edge-pattern-dotted flowchart-link LS-BE LE-MW" style="fill:none;stroke-width:2px;stroke-dasharray:3;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M0,100L1.667,95.833C3.333,91.667,6.667,83.333,8.333,75.883C10,68.433,10,61.867,10,58.583L10,55.3" id="L-MW-FE-0" class="edge-thickness-normal edge-pattern-dotted flowchart-link LS-MW LE-FE" style="fill:none;stroke-width:2px;stroke-dasharray:3;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path><path d="M10,50L14.583,54.167C19.167,58.333,28.333,66.667,32.917,74.117C37.5,81.567,37.5,88.133,37.5,91.417L37.5,94.7" id="L-FE-TRK-0" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-FE LE-TRK" style="fill:none;" marker-end="url(#mermaid-1788286132830_flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(undefined, NaN)"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">GET /congrats</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(undefined, NaN)"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">GET /feedback</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(undefined, NaN)"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">busca conteúdo</span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default default flowchart-label" id="flowchart-U-0" data-node="true" data-id="U" transform="translate(10, 0)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Usuário<br>finaliza compra</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-FE-1" data-node="true" data-id="FE" transform="translate(10, 50)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Frontend SSR</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-MW-3" data-node="true" data-id="MW" transform="translate(0, 100)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Middleend<br>monta brick JSON</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-BE-5" data-node="true" data-id="BE" transform="translate(0, 150)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Backend<br>decide contexto</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-CFG-7" data-node="true" data-id="CFG" transform="translate(0, 200)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Config API<br>texto / ícone / link</span></div></foreignObject></g></g><g class="node default default flowchart-label" id="flowchart-TRK-15" data-node="true" data-id="TRK" transform="translate(37.5, 100)"><rect class="basic label-container" style="" rx="0" ry="0" x="-7.5" y="-7.5" width="15" height="15"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Tracking<br>mede clique</span></div></foreignObject></g></g></g></g></g></svg></div>
+            <div class="mermaid">
+                flowchart TB
+                U["Usuário<br/>finaliza compra"] --> FE["Frontend SSR"]
+                FE -->|"GET /congrats"| MW["Middleend<br/>monta brick JSON"]
+                MW -->|"GET /feedback"| BE["Backend<br/>decide contexto"]
+                BE -->|"busca conteúdo"| CFG["Config API<br/>texto / ícone / link"]
+                CFG -.-> BE
+                BE -.-> MW
+                MW -.-> FE
+                FE --> TRK["Tracking<br/>mede clique"]
+            </div>
             <div class="diagram-mobile architecture-mobile" aria-label="Fluxo das camadas da arquitetura">
                 <div class="diagram-step c-green"><b>1. Frontend SSR</b>Recebe a tela de pós-compra.</div>
                 <div class="diagram-connector">↓ GET /congrats</div>
@@ -1636,7 +1682,25 @@
         <div class="eyebrow c-darkblue">Diagrama de sequência</div>
         <h2>O ciclo de vida de uma requisição</h2>
         <div class="mermaid-wrap">
-            <div class="mermaid" data-processed="true"><svg id="mermaid-1788286132896" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="max-width: none;" viewBox="-50 -10 1050 629" role="graphics-document document" aria-roledescription="sequence"><g><line id="actor4" x1="875" y1="5" x2="875" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-4"><rect x="800" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="CFG" rx="3" ry="3" class="actor actor-top"></rect><text x="875" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="875" dy="0">Config</tspan></text></g></g><g><line id="actor3" x1="675" y1="5" x2="675" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-3"><rect x="600" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="BE" rx="3" ry="3" class="actor actor-top"></rect><text x="675" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="675" dy="0">Backend</tspan></text></g></g><g><line id="actor2" x1="475" y1="5" x2="475" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-2"><rect x="400" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="MW" rx="3" ry="3" class="actor actor-top"></rect><text x="475" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="475" dy="0">Middleend</tspan></text></g></g><g><line id="actor1" x1="275" y1="5" x2="275" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-1"><rect x="200" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="FE" rx="3" ry="3" class="actor actor-top"></rect><text x="275" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="275" dy="0">Frontend</tspan></text></g></g><g><line id="actor0" x1="75" y1="5" x2="75" y2="2000" class="200" stroke-width="0.5px" stroke="#999"></line><g id="root-0"><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" name="U" rx="3" ry="3" class="actor actor-top"></rect><text x="75" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle; font-size: 16px; font-weight: 400;"><tspan x="75" dy="0">Usuário</tspan></text></g></g><style>#mermaid-1788286132896{font-family:JetBrains Mono,monospace;font-size:18px;fill:#ccc;}#mermaid-1788286132896 .error-icon{fill:#a44141;}#mermaid-1788286132896 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1788286132896 .edge-thickness-normal{stroke-width:2px;}#mermaid-1788286132896 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1788286132896 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1788286132896 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1788286132896 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1788286132896 .marker{fill:#8B5CF6;stroke:#8B5CF6;}#mermaid-1788286132896 .marker.cross{stroke:#8B5CF6;}#mermaid-1788286132896 svg{font-family:JetBrains Mono,monospace;font-size:18px;}#mermaid-1788286132896 .actor{stroke:#8B5CF6;fill:#201F2E;}#mermaid-1788286132896 text.actor&gt;tspan{fill:#F4F2FA;stroke:none;}#mermaid-1788286132896 .actor-line{stroke:lightgrey;}#mermaid-1788286132896 .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#C9B6F5;}#mermaid-1788286132896 .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#C9B6F5;}#mermaid-1788286132896 #arrowhead path{fill:#C9B6F5;stroke:#C9B6F5;}#mermaid-1788286132896 .sequenceNumber{fill:black;}#mermaid-1788286132896 #sequencenumber{fill:#C9B6F5;}#mermaid-1788286132896 #crosshead path{fill:#C9B6F5;stroke:#C9B6F5;}#mermaid-1788286132896 .messageText{fill:#F4F2FA;stroke:none;}#mermaid-1788286132896 .labelBox{stroke:#81B1DB;fill:#201F2E;}#mermaid-1788286132896 .labelText,#mermaid-1788286132896 .labelText&gt;tspan{fill:#F4F2FA;stroke:none;}#mermaid-1788286132896 .loopText,#mermaid-1788286132896 .loopText&gt;tspan{fill:#C6FF3D;stroke:none;}#mermaid-1788286132896 .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:#81B1DB;fill:#81B1DB;}#mermaid-1788286132896 .note{stroke:hsl(180, 0%, 18.3529411765%);fill:#290B5E;}#mermaid-1788286132896 .noteText,#mermaid-1788286132896 .noteText&gt;tspan{fill:#F4F2FA;stroke:none;}#mermaid-1788286132896 .activation0{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}#mermaid-1788286132896 .activation1{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}#mermaid-1788286132896 .activation2{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:#81B1DB;}#mermaid-1788286132896 .actorPopupMenu{position:absolute;}#mermaid-1788286132896 .actorPopupMenuPanel{position:absolute;fill:#201F2E;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#mermaid-1788286132896 .actor-man line{stroke:#8B5CF6;fill:#201F2E;}#mermaid-1788286132896 .actor-man circle,#mermaid-1788286132896 line{stroke:#8B5CF6;fill:#201F2E;stroke-width:2px;}#mermaid-1788286132896 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><defs><symbol id="computer" width="24" height="24"><path transform="scale(.5)" d="M2 2v13h20v-13h-20zm18 11h-16v-9h16v9zm-10.228 6l.466-1h3.524l.467 1h-4.457zm14.228 3h-24l2-6h2.104l-1.33 4h18.45l-1.297-4h2.073l2 6zm-5-10h-14v-7h14v7z"></path></symbol></defs><defs><symbol id="database" fill-rule="evenodd" clip-rule="evenodd"><path transform="scale(.5)" d="M12.258.001l.256.004.255.005.253.008.251.01.249.012.247.015.246.016.242.019.241.02.239.023.236.024.233.027.231.028.229.031.225.032.223.034.22.036.217.038.214.04.211.041.208.043.205.045.201.046.198.048.194.05.191.051.187.053.183.054.18.056.175.057.172.059.168.06.163.061.16.063.155.064.15.066.074.033.073.033.071.034.07.034.069.035.068.035.067.035.066.035.064.036.064.036.062.036.06.036.06.037.058.037.058.037.055.038.055.038.053.038.052.038.051.039.05.039.048.039.047.039.045.04.044.04.043.04.041.04.04.041.039.041.037.041.036.041.034.041.033.042.032.042.03.042.029.042.027.042.026.043.024.043.023.043.021.043.02.043.018.044.017.043.015.044.013.044.012.044.011.045.009.044.007.045.006.045.004.045.002.045.001.045v17l-.001.045-.002.045-.004.045-.006.045-.007.045-.009.044-.011.045-.012.044-.013.044-.015.044-.017.043-.018.044-.02.043-.021.043-.023.043-.024.043-.026.043-.027.042-.029.042-.03.042-.032.042-.033.042-.034.041-.036.041-.037.041-.039.041-.04.041-.041.04-.043.04-.044.04-.045.04-.047.039-.048.039-.05.039-.051.039-.052.038-.053.038-.055.038-.055.038-.058.037-.058.037-.06.037-.06.036-.062.036-.064.036-.064.036-.066.035-.067.035-.068.035-.069.035-.07.034-.071.034-.073.033-.074.033-.15.066-.155.064-.16.063-.163.061-.168.06-.172.059-.175.057-.18.056-.183.054-.187.053-.191.051-.194.05-.198.048-.201.046-.205.045-.208.043-.211.041-.214.04-.217.038-.22.036-.223.034-.225.032-.229.031-.231.028-.233.027-.236.024-.239.023-.241.02-.242.019-.246.016-.247.015-.249.012-.251.01-.253.008-.255.005-.256.004-.258.001-.258-.001-.256-.004-.255-.005-.253-.008-.251-.01-.249-.012-.247-.015-.245-.016-.243-.019-.241-.02-.238-.023-.236-.024-.234-.027-.231-.028-.228-.031-.226-.032-.223-.034-.22-.036-.217-.038-.214-.04-.211-.041-.208-.043-.204-.045-.201-.046-.198-.048-.195-.05-.19-.051-.187-.053-.184-.054-.179-.056-.176-.057-.172-.059-.167-.06-.164-.061-.159-.063-.155-.064-.151-.066-.074-.033-.072-.033-.072-.034-.07-.034-.069-.035-.068-.035-.067-.035-.066-.035-.064-.036-.063-.036-.062-.036-.061-.036-.06-.037-.058-.037-.057-.037-.056-.038-.055-.038-.053-.038-.052-.038-.051-.039-.049-.039-.049-.039-.046-.039-.046-.04-.044-.04-.043-.04-.041-.04-.04-.041-.039-.041-.037-.041-.036-.041-.034-.041-.033-.042-.032-.042-.03-.042-.029-.042-.027-.042-.026-.043-.024-.043-.023-.043-.021-.043-.02-.043-.018-.044-.017-.043-.015-.044-.013-.044-.012-.044-.011-.045-.009-.044-.007-.045-.006-.045-.004-.045-.002-.045-.001-.045v-17l.001-.045.002-.045.004-.045.006-.045.007-.045.009-.044.011-.045.012-.044.013-.044.015-.044.017-.043.018-.044.02-.043.021-.043.023-.043.024-.043.026-.043.027-.042.029-.042.03-.042.032-.042.033-.042.034-.041.036-.041.037-.041.039-.041.04-.041.041-.04.043-.04.044-.04.046-.04.046-.039.049-.039.049-.039.051-.039.052-.038.053-.038.055-.038.056-.038.057-.037.058-.037.06-.037.061-.036.062-.036.063-.036.064-.036.066-.035.067-.035.068-.035.069-.035.07-.034.072-.034.072-.033.074-.033.151-.066.155-.064.159-.063.164-.061.167-.06.172-.059.176-.057.179-.056.184-.054.187-.053.19-.051.195-.05.198-.048.201-.046.204-.045.208-.043.211-.041.214-.04.217-.038.22-.036.223-.034.226-.032.228-.031.231-.028.234-.027.236-.024.238-.023.241-.02.243-.019.245-.016.247-.015.249-.012.251-.01.253-.008.255-.005.256-.004.258-.001.258.001zm-9.258 20.499v.01l.001.021.003.021.004.022.005.021.006.022.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.023.018.024.019.024.021.024.022.025.023.024.024.025.052.049.056.05.061.051.066.051.07.051.075.051.079.052.084.052.088.052.092.052.097.052.102.051.105.052.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.048.144.049.147.047.152.047.155.047.16.045.163.045.167.043.171.043.176.041.178.041.183.039.187.039.19.037.194.035.197.035.202.033.204.031.209.03.212.029.216.027.219.025.222.024.226.021.23.02.233.018.236.016.24.015.243.012.246.01.249.008.253.005.256.004.259.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.021.224-.024.22-.026.216-.027.212-.028.21-.031.205-.031.202-.034.198-.034.194-.036.191-.037.187-.039.183-.04.179-.04.175-.042.172-.043.168-.044.163-.045.16-.046.155-.046.152-.047.148-.048.143-.049.139-.049.136-.05.131-.05.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.053.083-.051.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.05.023-.024.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.023.01-.022.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.127l-.077.055-.08.053-.083.054-.085.053-.087.052-.09.052-.093.051-.095.05-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.045-.118.044-.12.043-.122.042-.124.042-.126.041-.128.04-.13.04-.132.038-.134.038-.135.037-.138.037-.139.035-.142.035-.143.034-.144.033-.147.032-.148.031-.15.03-.151.03-.153.029-.154.027-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.01-.179.008-.179.008-.181.006-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.006-.179-.008-.179-.008-.178-.01-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.027-.153-.029-.151-.03-.15-.03-.148-.031-.146-.032-.145-.033-.143-.034-.141-.035-.14-.035-.137-.037-.136-.037-.134-.038-.132-.038-.13-.04-.128-.04-.126-.041-.124-.042-.122-.042-.12-.044-.117-.043-.116-.045-.113-.045-.112-.046-.109-.047-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.05-.093-.052-.09-.051-.087-.052-.085-.053-.083-.054-.08-.054-.077-.054v4.127zm0-5.654v.011l.001.021.003.021.004.021.005.022.006.022.007.022.009.022.01.022.011.023.012.023.013.023.015.024.016.023.017.024.018.024.019.024.021.024.022.024.023.025.024.024.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.052.11.051.114.051.119.052.123.05.127.051.131.05.135.049.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.044.171.042.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.022.23.02.233.018.236.016.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.012.241-.015.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.048.139-.05.136-.049.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.051.051-.049.023-.025.023-.024.021-.025.02-.024.019-.024.018-.024.017-.024.015-.023.014-.023.013-.024.012-.022.01-.023.01-.023.008-.022.006-.022.006-.022.004-.021.004-.022.001-.021.001-.021v-4.139l-.077.054-.08.054-.083.054-.085.052-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.044-.118.044-.12.044-.122.042-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.035-.143.033-.144.033-.147.033-.148.031-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.009-.179.009-.179.007-.181.007-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.007-.179-.007-.179-.009-.178-.009-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.031-.146-.033-.145-.033-.143-.033-.141-.035-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.04-.126-.041-.124-.042-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.051-.093-.051-.09-.051-.087-.053-.085-.052-.083-.054-.08-.054-.077-.054v4.139zm0-5.666v.011l.001.02.003.022.004.021.005.022.006.021.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.024.018.023.019.024.021.025.022.024.023.024.024.025.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.051.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.043.171.043.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.021.23.02.233.018.236.017.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.013.241-.014.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.049.139-.049.136-.049.131-.051.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.049.023-.025.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.022.01-.023.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.153l-.077.054-.08.054-.083.053-.085.053-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.048-.105.048-.106.048-.109.046-.111.046-.114.046-.115.044-.118.044-.12.043-.122.043-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.034-.143.034-.144.033-.147.032-.148.032-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.024-.161.024-.162.023-.163.023-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.01-.178.01-.179.009-.179.007-.181.006-.182.006-.182.004-.184.003-.184.001-.185.001-.185-.001-.184-.001-.184-.003-.182-.004-.182-.006-.181-.006-.179-.007-.179-.009-.178-.01-.176-.01-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.023-.162-.023-.161-.024-.159-.024-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.032-.146-.032-.145-.033-.143-.034-.141-.034-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.041-.126-.041-.124-.041-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.048-.105-.048-.102-.048-.1-.05-.097-.049-.095-.051-.093-.051-.09-.052-.087-.052-.085-.053-.083-.053-.08-.054-.077-.054v4.153zm8.74-8.179l-.257.004-.254.005-.25.008-.247.011-.244.012-.241.014-.237.016-.233.018-.231.021-.226.022-.224.023-.22.026-.216.027-.212.028-.21.031-.205.032-.202.033-.198.034-.194.036-.191.038-.187.038-.183.04-.179.041-.175.042-.172.043-.168.043-.163.045-.16.046-.155.046-.152.048-.148.048-.143.048-.139.049-.136.05-.131.05-.126.051-.123.051-.118.051-.114.052-.11.052-.106.052-.101.052-.096.052-.092.052-.088.052-.083.052-.079.052-.074.051-.07.052-.065.051-.06.05-.056.05-.051.05-.023.025-.023.024-.021.024-.02.025-.019.024-.018.024-.017.023-.015.024-.014.023-.013.023-.012.023-.01.023-.01.022-.008.022-.006.023-.006.021-.004.022-.004.021-.001.021-.001.021.001.021.001.021.004.021.004.022.006.021.006.023.008.022.01.022.01.023.012.023.013.023.014.023.015.024.017.023.018.024.019.024.02.025.021.024.023.024.023.025.051.05.056.05.06.05.065.051.07.052.074.051.079.052.083.052.088.052.092.052.096.052.101.052.106.052.11.052.114.052.118.051.123.051.126.051.131.05.136.05.139.049.143.048.148.048.152.048.155.046.16.046.163.045.168.043.172.043.175.042.179.041.183.04.187.038.191.038.194.036.198.034.202.033.205.032.21.031.212.028.216.027.22.026.224.023.226.022.231.021.233.018.237.016.241.014.244.012.247.011.25.008.254.005.257.004.26.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.022.224-.023.22-.026.216-.027.212-.028.21-.031.205-.032.202-.033.198-.034.194-.036.191-.038.187-.038.183-.04.179-.041.175-.042.172-.043.168-.043.163-.045.16-.046.155-.046.152-.048.148-.048.143-.048.139-.049.136-.05.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.05.051-.05.023-.025.023-.024.021-.024.02-.025.019-.024.018-.024.017-.023.015-.024.014-.023.013-.023.012-.023.01-.023.01-.022.008-.022.006-.023.006-.021.004-.022.004-.021.001-.021.001-.021-.001-.021-.001-.021-.004-.021-.004-.022-.006-.021-.006-.023-.008-.022-.01-.022-.01-.023-.012-.023-.013-.023-.014-.023-.015-.024-.017-.023-.018-.024-.019-.024-.02-.025-.021-.024-.023-.024-.023-.025-.051-.05-.056-.05-.06-.05-.065-.051-.07-.052-.074-.051-.079-.052-.083-.052-.088-.052-.092-.052-.096-.052-.101-.052-.106-.052-.11-.052-.114-.052-.118-.051-.123-.051-.126-.051-.131-.05-.136-.05-.139-.049-.143-.048-.148-.048-.152-.048-.155-.046-.16-.046-.163-.045-.168-.043-.172-.043-.175-.042-.179-.041-.183-.04-.187-.038-.191-.038-.194-.036-.198-.034-.202-.033-.205-.032-.21-.031-.212-.028-.216-.027-.22-.026-.224-.023-.226-.022-.231-.021-.233-.018-.237-.016-.241-.014-.244-.012-.247-.011-.25-.008-.254-.005-.257-.004-.26-.001-.26.001z"></path></symbol></defs><defs><symbol id="clock" width="24" height="24"><path transform="scale(.5)" d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.848 12.459c.202.038.202.333.001.372-1.907.361-6.045 1.111-6.547 1.111-.719 0-1.301-.582-1.301-1.301 0-.512.77-5.447 1.125-7.445.034-.192.312-.181.343.014l.985 6.238 5.394 1.011z"></path></symbol></defs><defs><marker id="arrowhead" refX="7.9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="4" refY="4.5"><path fill="none" stroke="#000000" stroke-width="1pt" d="M 1,2 L 6,7 M 6,2 L 1,7" style="stroke-dasharray: 0, 0;"></path></marker></defs><defs><marker id="filled-head" refX="15.5" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><g><line x1="391" y1="171" x2="886" y2="171" class="loopLine"></line><line x1="886" y1="171" x2="886" y2="513" class="loopLine"></line><line x1="391" y1="513" x2="886" y2="513" class="loopLine"></line><line x1="391" y1="171" x2="391" y2="513" class="loopLine"></line><line x1="391" y1="365" x2="886" y2="365" class="loopLine" style="stroke-dasharray: 3, 3;"></line><polygon points="391,171 441,171 441,184 432.6,191 391,191" class="labelBox"></polygon><text x="416" y="184" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="labelText" style="font-size: 16px; font-weight: 400;">par</text><text x="663.5" y="189" text-anchor="middle" class="loopText" style="font-size: 16px; font-weight: 400;"><tspan x="663.5">[Mono.zip em paralelo]</tspan></text><text x="638.5" y="383" text-anchor="middle" class="loopText" style="font-size: 16px; font-weight: 400;">[outras fontes]</text></g><text x="174" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">finaliza a compra</text><line x1="76" y1="113" x2="271" y2="113" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="374" y="128" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">GET /congrats</text><line x1="276" y1="161" x2="471" y2="161" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="574" y="221" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">GET /feedback</text><line x1="476" y1="254" x2="671" y2="254" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="774" y="269" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">busca conteúdo</text><line x1="676" y1="302" x2="871" y2="302" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></line><text x="777" y="317" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">conteúdo</text><line x1="874" y1="350" x2="679" y2="350" class="messageLine1" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="stroke-dasharray: 3, 3; fill: none;"></line><text x="476" y="410" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">frete, pontos...</text><path d="M 476,443 C 536,433 536,473 476,463" class="messageLine0" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="fill: none;"></path><text x="377" y="528" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">brick ou vazio</text><line x1="474" y1="561" x2="279" y2="561" class="messageLine1" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="stroke-dasharray: 3, 3; fill: none;"></line><text x="177" y="576" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" class="messageText" dy="1em" style="font-size: 16px; font-weight: 400;">tela renderizada</text><line x1="274" y1="609" x2="79" y2="609" class="messageLine1" stroke-width="2" stroke="none" marker-end="url(#arrowhead)" style="stroke-dasharray: 3, 3; fill: none;"></line></svg></div>
+            <div class="mermaid">
+                sequenceDiagram
+                participant U as Usuário
+                participant FE as Frontend
+                participant MW as Middleend
+                participant BE as Backend
+                participant CFG as Config
+                U->>FE: finaliza a compra
+                FE->>MW: GET /congrats
+                par Mono.zip em paralelo
+                MW->>BE: GET /feedback
+                BE->>CFG: busca conteúdo
+                CFG-->>BE: conteúdo
+                and outras fontes
+                MW->>MW: frete, pontos...
+                end
+                MW-->>FE: brick ou vazio
+                FE-->>U: tela renderizada
+            </div>
             <div class="diagram-mobile sequence-mobile" aria-label="Sequência resumida de uma requisição">
                 <div class="sequence-row"><strong>Usuário</strong><span>finaliza a compra</span></div>
                 <div class="sequence-row"><strong>Frontend</strong><span>GET /congrats</span></div>
@@ -1683,7 +1747,9 @@
         <div class="grid cols-2">
             <div class="card c-tdcviolet">
                 <h3>A estratégia</h3>
-                <pre style="max-height: none"><span class="kw">public class</span> RightsCardStrategy
+                <pre
+                        style="max-height: none"
+                ><span class="kw">public class</span> RightsCardStrategy
     <span class="kw">implements</span> CardStrategy {
 
   <span class="kw">public boolean</span> handles(CardType t) {
@@ -1697,7 +1763,9 @@
             </div>
             <div class="card c-tdcviolet">
                 <h3>O dispatcher — switch exaustivo</h3>
-                <pre style="max-height: none"><span class="kw">return switch</span> (cardType) {
+                <pre
+                        style="max-height: none"
+                ><span class="kw">return switch</span> (cardType) {
   <span class="kw">case</span> MEUS_DIREITOS -&gt;
       rightsCardStrategy.buildBrick(ctx);
   <span class="kw">case</span> FRETE_GRATIS  -&gt;
@@ -1722,14 +1790,18 @@
         <div class="grid cols-2">
             <div class="card c-blue">
                 <h3>Antes de ativar</h3>
-                <pre style="max-height: none"><span class="tok">"real_state"</span>: {
+                <pre
+                        style="max-height: none"
+                ><span class="tok">"real_state"</span>: {
   <span class="str">"meusDireitos"</span>: {}
 }</pre>
                 <p>Campo existe, vazio. Middleend ignora. Zero risco.</p>
             </div>
             <div class="card c-blue">
                 <h3>Depois de ativar</h3>
-                <pre style="max-height: none"><span class="tok">"real_state"</span>: {
+                <pre
+                        style="max-height: none"
+                ><span class="tok">"real_state"</span>: {
   <span class="str">"meusDireitos"</span>: {
     <span class="str">"title"</span>: <span class="str">"Meus Direitos"</span>,
     <span class="str">"deadline"</span>: <span class="str">"30 dias"</span>
@@ -1774,7 +1846,10 @@
             <code style="font-family: var(--mono)">Mono.zip()</code>
         </h2>
         <p class="sub">
-            Uma pergunta simples decide o destino das outras 6 chamadas:<b style="color: var(--text)">o que o handler retorna quando dá erro?</b>
+            Uma pergunta simples decide o destino das outras 6 chamadas:<b
+                style="color: var(--text)"
+        >o que o handler retorna quando dá erro?</b
+        >
         </p>
         <div class="grid cols-2" style="margin-top: 1.6rem">
             <div class="card" style="border-color: rgba(255, 107, 107, 0.4)">
@@ -1865,12 +1940,15 @@
                 </p>
             </div>
         </div>
-        <p class="sub" style="
+        <p
+                class="sub"
+                style="
             margin-top: 1.8rem;
             font-family: var(--mono);
             color: var(--lime);
-          ">
-            <a class="go-demo" style="color: var(--lime);" href="./demo-mono-zip.html"><b>→ Abrir Demo interativa agora!</b></a>
+          "
+        >
+            <a class="go-demo" style="color: var(--lime);" href="demo-mono-zip.html"><b>→ Abrir Demo interativa agora!</b></a>
         </p>
     </section>
 
@@ -1918,7 +1996,9 @@
                 </p>
             </div>
         </div>
-        <pre style="margin-top: 1.4rem; max-height: none"><span class="kw">if</span> (featureFlags.isEnabled(<span class="str">"ff-meus-direitos"</span>, ctx.categoryId())) {
+        <pre
+                style="margin-top: 1.4rem; max-height: none"
+        ><span class="kw">if</span> (featureFlags.isEnabled(<span class="str">"ff-meus-direitos"</span>, ctx.categoryId())) {
     <span class="com">// busca conteúdo e monta o card</span>
 }</pre>
         <p class="sub" style="margin-top: 1rem">
@@ -2006,44 +2086,61 @@
     </section>
 
     <!-- 29. CITAÇÃO -->
-    <section class="slide slide-capa quote-slide" style="align-items: center; text-align: center">
-        <div class="deco-circle" style="
+    <section
+            class="slide slide-capa quote-slide"
+            style="align-items: center; text-align: center"
+    >
+        <div
+                class="deco-circle"
+                style="
             width: 260px;
             height: 260px;
             top: -80px;
             left: -60px;
             border-color: rgba(238, 86, 175, 0.28);
-          "></div>
-        <div class="deco-circle" style="
+          "
+        ></div>
+        <div
+                class="deco-circle"
+                style="
             width: 160px;
             height: 160px;
             bottom: -40px;
             right: 6vw;
             border-color: rgba(238, 86, 175, 0.18);
-          "></div>
-        <p class="closing-quote" style="
+          "
+        ></div>
+        <p
+                class="closing-quote"
+                style="
             font-family: var(--display);
             font-weight: 600;
             font-size: clamp(2.2rem, 5vw, 4rem);
             line-height: 1.3;
             max-width: 26ch;
             margin: 0 auto;
-          ">
+          "
+        >
             "A tecnologia move o <br> mundo para frente."
         </p>
-        <p class="sub" style="
+        <p
+                class="sub"
+                style="
             margin-top: 1.5rem;
             font-family: var(--mono);
             color: var(--violet-light);
             text-align: center;
             max-width: none;
-          ">
+          "
+        >
             — Steve Jobs
         </p>
     </section>
 
     <!-- 30. MUITO OBRIGADA -->
-    <section class="slide slide-capa slide-final active" style="
+    <section
+            class="slide slide-capa slide-final"
+            style="
           background:
             radial-gradient(
               1100px 760px at 90% -8%,
@@ -2061,14 +2158,18 @@
               transparent 70%
             ),
             var(--bg);
-        ">
-        <div class="deco-circle" style="
+        "
+    >
+        <div
+                class="deco-circle"
+                style="
             width: 300px;
             height: 300px;
             bottom: -100px;
             left: -60px;
             border-color: rgba(238, 86, 175, 0.28);
-          "></div>
+          "
+        ></div>
         <div class="eyebrow">Fim de faixa</div>
         <h1 style="font-size: clamp(2rem, 5vw, 3.6rem)">Muito obrigada!</h1>
         <p class="sub">
@@ -2077,15 +2178,28 @@
         </p>
         <div class="resource-list">
             <div class="resource-row">
-            <div id="linkedin-qr" class="resource-qr" title="https://www.linkedin.com/in/larissa-a-souza"><canvas width="112" height="112" style="display: none;"></canvas><img src="data:image/png;base64,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" style="display: block;"></div>
+            <div
+                    id="linkedin-qr"
+                    class="resource-qr"
+            ></div>
             <div class="resource-info">
-                <p class="sub" style="
+                <p
+                        class="sub"
+                        style="
                 margin-top: 0;
                 font-family: var(--mono);
                 color: var(--violet-light);
                 max-width: none;
-              ">
-                    <a href="https://www.linkedin.com/in/larissa-a-souza" target="_blank" rel="noopener noreferrer" class="go-demo resource-link" style="color: var(--violet-light)" aria-label="Abrir perfil de Larissa Souza no LinkedIn">Perfil no LinkedIn</a>
+              "
+                >
+                    <a
+                            href="https://www.linkedin.com/in/larissa-a-souza"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="go-demo resource-link"
+                            style="color: var(--violet-light)"
+                            aria-label="Abrir perfil de Larissa Souza no LinkedIn"
+                    >Perfil no LinkedIn</a>
                 </p>
                 <p class="sub" style="margin-top: 0.5rem; max-width: none">
                     Larissa Souza · TDC São Paulo 2026
@@ -2094,23 +2208,50 @@
             </div>
 
             <div class="resource-row">
-            <div id="repo-qr" class="resource-qr" title="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos"><canvas width="112" height="112" style="display: none;"></canvas><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwCAYAAADG4PRLAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAcKADAAQAAAABAAAAcAAAAADeglGxAAAG5klEQVR4Ae3cS47cZgwE4DjwAZxdcv/DZZkjONFCwacfXTI16p5pAvSmS6VikUOCxHj8+Pbjx58/f3vyr3/++ft/xz/++Ot/LEiaxKdYeXElr3qxsZV6jBXfidXnDP9+9nLevX8HZoDvP6PTCr/71pWXr2DPjvrkqT5pnuWjv3mTf9Jf5fUX6yNfwWv9s4GVrr2xZgb4xsOplHY4oQasq+q7Hd85BbvH9mmuimfSyyd/ebGxlRpeEaun+Kye2UA71RDPABsOzZLjCVV0B6fT5FlQIzZvhdczxSZN0ld4Pa1TXp9n4tnAZ3bzC7xmgF/Q9GemfPkJtdh0Xjw1SVPxeYXG2pK/Nav5DDwb+BldfmGOGeALm/sZ1vGEptNxpyg9K2dHjbHiSj36qE8+ib/qY66EU66kX/nZwLUjzZ5ngM0GtpZ7OKHpRKxBz372jFjDHd4ak4+aO3krPkkj/xE8G/iRrr1RzAzwjYbxkVK+/fzv10cCqzGeJmMqZ019wld9kr7CW4Nfl7FqPgPPBn5Gl1+YYwb4wuZ+hvU3/15o5RSk0yF/p3Br0LPCmzfFJo28ueQTTrnkU2ziUw2r52xg6mATfgbYZFCpzMN3oet6pqBHvCuvT+L1UCOvj7z6O5qKp7nUp7xqxK/ymQ20yw3xDLDh0Cz58F2oL8RX17+iV+M5kreGpLnD65+w9Zirok+aCm8ua1hjZwPXjjR7ngE2G9ha7uGPk3x5trbqdqy+sv4Vze599pnyppikl78am/Tyfr3ylbzGrvrZQLvZEM8AGw7Nkr+7kq6qogo2Vs9K7FWNuVKsNaiXNzZpEq+PmuQpfwevuWYD73TzDWJngG8whDslHH4WWjFaV3iPSSdFfteefSb/FKO/sfIpVt5YeX2SJunlE06e5k2xGz8beNadBu9mgA2GdFbi97srvJsnn/399qnGE3GHvxNrDdZZwcZag1iNnmrkxWqSz6afDbRrDfEMsOHQLPnwXahrq8gVViOvvoK/yse81unXclWTYuXNdcdfnw3PBq4dafY8A2w2sLXc+Cfyaf1Xg/356lnY484+KzWYN+nVnOV79C55PtKuXMqbPJN+9fV5NtBuNMQzwIZDs+TDn8jfWW1j0ylQYxHq1STeWPXyxsonvZoUq0asPvknvhJ7ppkNdBIN8Qyw4dAsOX4Xqsj1d53VJFyJVZN8Ul5jk0ZP9fJXYyt6/ROu1JM0m+dsYOpsE34G2GRQqczDz0KTSN7Tcbbae4z6nds+ja1ojE16NRX/q/qKpxr9K/jq17V5zgZWOvvGmhngGw+nUlr8LjSdgo+s+V5IJXbXnn1aW/JUk7wqsWr0TLy51MiL9ZQ3Nmk2/WygXWuIZ4ANh2bJhxPqqqYVltfIWHn1dzSv8LQ2/cXWXNEbK674qDHWvKtmNtBONcQzwIZDs+TSb+TPVng3q2h27dmnPme6X71bT82u17+i2ePWT2OTZ4VffR89m2t9Pxu4dqTZ8wyw2cDWcg/fha4vf/WcVvvO6dBTn1/Vcvd9Ja8a81mnGnn1CadY+TV2NnDtSLPnGWCzga3lxhOa1tazoCbxJlQjr4/8HWyu5K+mkiv5GHvHsxK71jAbaPcb4hlgw6FZcjyhilxb11xevRp59UmjPuHkI29syqW+ornqqT7hlFe9dcpveDZw7Uiz5xlgs4Gt5R7+pyZfutpiNeKrmrOzoO8VnGowV9KkPFf1yUdeT2tLGvkVzwauHWn2PANsNrC13MO/Tlpf7s9pzff326caT8SrNSmvfKWGpDdWnL7GpLnqr494zTsbaHca4hlgw6FZcvyNfFp5V1hN4k1WwfqoT7nUiK/qK7F6qk81q6lg/aues4GVzr6xZgb4xsOplFb6S00Vo6RJp+Aj5+JRjoqPmkceK/esmit5zVXRr7XOBq4dafY8A2w2sLXc+P+FrsIrz5VTcPV0qLcWefPK39GnWPk7efVJ2K/FXJt+NjB1rQk/A2wyqFTm4Weh63qmoEe8a+77iqex6hOvvxr5io+xSV/xVJOw/kljPVXNbGDqVBN+BthkUKnMwwlVVFnnq2dBffKXT3p5a67g5G9sxb+iMZf+z8Szgc/s5hd4zQC/oOnPTBlP6LOSpFOT+JQ36ROfzlfSm9dY9Yk3NunViJNeXr01bPxsoN1piGeADYdmyS8/oSYTr6fAd4+wJ8VYeePk1atJfNJUPNXoI65o1IvX2NlAu9MQzwAbDs2S4wldV9WgZ+NKrnTuEp9qTPpKDckz8RVP61Evr7+ajZ8NtDsN8Qyw4dAsOf69UEVXsWueTsFVT/VX/dXrk2pLemMrOPkbm3JVYjef2UC72RDPABsOzZJngHajIf4XJOGicMD39+EAAAAASUVORK5CYII=" style="display: block;"></div>
+            <div
+                    id="repo-qr"
+                    class="resource-qr"
+            ></div>
             <div class="resource-info">
-                <p class="sub" style="
+                <p
+                        class="sub"
+                        style="
                 margin-top: 0;
                 font-family: var(--mono);
                 color: var(--violet-light);
                 max-width: none;
-              ">
+              "
+                >
                     Material completo (slides + demo)
                 </p>
                 <p class="sub" style="margin-top: 0.4rem; max-width: none">
-                    <a href="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos" target="_blank" rel="noopener noreferrer" class="go-demo resource-link" style="color: var(--lime)">Repositório no GitHub</a>
+                    <a
+                            href="https://github.com/eu-larissasouza/tdc2026-uma-feature-4-microsservicos"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="go-demo resource-link"
+                            style="color: var(--lime)"
+                    >Repositório no GitHub</a
+                    >
                 </p>
                 <p class="sub" style="margin-top: 0.3rem; max-width: none">
-                    <a href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/" target="_blank" rel="noopener noreferrer" style="color: var(--violet-light)" class="go-demo">Slides</a>
+                    <a
+                            href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="color: var(--violet-light)"
+                            class="go-demo"
+                    >Slides</a
+                    >
                     ·
-                    <a href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html" target="_blank" rel="noopener noreferrer" style="color: var(--violet-light)" class="go-demo">Demo</a>
+                    <a
+                            href="https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="color: var(--violet-light)"
+                            class="go-demo"
+                    >Demo</a
+                    >
                 </p>
             </div>
             </div>
@@ -2121,9 +2262,9 @@
 <div class="footer-meta" id="footer-meta">
     Uma feature, quatro microsserviços
 </div>
-<div class="progress-label" id="progress-label">30 / 30</div>
-<div class="scrubber" id="scrubber"><div class="bar played" style="height: 20%;"></div><div class="bar played" style="height: 79.499889%;"></div><div class="bar played" style="height: 35.332466%;"></div><div class="bar played" style="height: 75.548881%;"></div><div class="bar played" style="height: 49.646801%;"></div><div class="bar played" style="height: 67.909227%;"></div><div class="bar played" style="height: 61.992481%;"></div><div class="bar played" style="height: 57.088227%;"></div><div class="bar played" style="height: 71.549709%;"></div><div class="bar played" style="height: 43.804434%;"></div><div class="bar played" style="height: 77.68385%;"></div><div class="bar played" style="height: 28.939942%;"></div><div class="bar played" style="height: 79.987574%;"></div><div class="bar played" style="height: 26.518196%;"></div><div class="bar played" style="height: 78.307907%;"></div><div class="bar played" style="height: 41.543501%;"></div><div class="bar played" style="height: 72.756384%;"></div><div class="bar played" style="height: 55.13824%;"></div><div class="bar played" style="height: 63.701646%;"></div><div class="bar played" style="height: 66.399673%;"></div><div class="bar played" style="height: 51.744961%;"></div><div class="bar played" style="height: 74.58%;"></div><div class="bar played" style="height: 37.680296%;"></div><div class="bar played" style="height: 79.136018%;"></div><div class="bar played" style="height: 22.441595%;"></div><div class="bar played" style="height: 79.76519%;"></div><div class="bar played" style="height: 32.959236%;"></div><div class="bar played" style="height: 76.425738%;"></div><div class="bar played" style="height: 47.499527%;"></div><div class="bar current" style="height: 89.339412%;"></div></div>
-<div class="speaker-notes" id="notes">Agradecer, mostrar o QR code do LinkedIn, abrir pro Q&amp;A.</div>
+<div class="progress-label" id="progress-label">01 / 30</div>
+<div class="scrubber" id="scrubber"></div>
+<div class="speaker-notes" id="notes"></div>
 <button class="tap-nav prev" id="prevTap" aria-label="Slide anterior">
     ‹
 </button>
@@ -2174,28 +2315,28 @@
         }
     })
 
-    // Mantém os diagramas legíveis: reduzimos apenas quando a largura exige e
-    // deixamos a área rolar quando a altura da janela for menor.
-    function fitMermaidDiagrams() {
-        document.querySelectorAll('.mermaid-wrap').forEach(wrap => {
-            const svg = wrap.querySelector('svg')
-            if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return
-            const vb = svg.viewBox.baseVal
-            if (!vb.width || !vb.height) return
-            const cs = getComputedStyle(wrap)
-            const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
-            const availW = wrap.clientWidth - padX - 6
-            const scale = Math.min(1, availW / vb.width)
-            svg.style.maxWidth = 'none'
-            svg.style.width = vb.width * scale + 'px'
-            svg.style.height = vb.height * scale + 'px'
-        })
-    }
-    mermaid
-        .run()
-        .then(fitMermaidDiagrams)
+    // O encaixe do diagrama dentro do .mermaid-wrap agora é 100% CSS (viewBox
+    // do SVG + preserveAspectRatio padrão), então não precisamos mais
+    // recalcular pixels em JS a cada resize — isso elimina o desalinhamento
+    // que dependia de como cada navegador resolvia getComputedStyle().
+
+    // Garante que a JetBrains Mono já esteja carregada ANTES do Mermaid medir
+    // o texto. Sem isso, em máquinas sem a fonte em cache, o Mermaid desenha
+    // as caixas usando a fonte fallback (mais estreita) e, quando a fonte
+    // real chega depois (font-display: swap), o texto vaza da caixa —
+    // é isso que corta "Frontend SSR" para "Frontend SS", por exemplo.
+    const fontsReady = (document.fonts && document.fonts.ready)
+        ? Promise.all([
+              document.fonts.load('400 18px "JetBrains Mono"'),
+              document.fonts.load('700 18px "JetBrains Mono"'),
+              document.fonts.ready
+          ])
+        : Promise.resolve()
+
+    fontsReady
+        .catch(() => {}) // se der erro no carregamento, renderiza mesmo assim
+        .then(() => mermaid.run())
         .catch(err => console.error('mermaid render error:', err))
-    window.addEventListener('resize', fitMermaidDiagrams)
 
     const slides = document.querySelectorAll('.slide')
     const total = slides.length
@@ -2353,7 +2494,6 @@
     )
 
     render()
-</script><div class="mermaidTooltip" style="opacity: 0;"></div>
-
-
-</body></html>
+</script>
+</body>
+</html>

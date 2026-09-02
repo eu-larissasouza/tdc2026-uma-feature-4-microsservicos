@@ -1,4 +1,6 @@
-<html lang="pt-BR"><head>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo — Mono.zip() &amp; Server-Driven UI · TDC São Paulo 2026</title>
@@ -287,41 +289,41 @@
         </p>
         <div class="zip-flow" style="margin-top:1.1rem;">
             <div class="zip-diagram" id="zip-diagram">
-      <div class="src-box " id="src-rec" data-state="idle">
-        <div class="name">🛍️<br> Recomendações</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    
-      <div class="src-box " id="src-ship" data-state="idle">
-        <div class="name">🚚 Acompanhamento</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    
-      <div class="src-box " id="src-pts" data-state="idle">
-        <div class="name">⭐ Pontos Fidelidade</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    
-      <div class="src-box " id="src-up" data-state="idle">
-        <div class="name">🏷️<br> Upsell / Ofertas</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    
-      <div class="src-box " id="src-rev" data-state="idle">
-        <div class="name">💬 Avaliação</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    
-      <div class="src-box " id="src-share" data-state="idle">
-        <div class="name">🔗 Compartilhar</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    
-      <div class="src-box rights" id="src-rights" data-state="idle">
-        <div class="name">📄 Meus Direitos</div>
-        <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
-      </div>
-    </div>
+                <div class="src-box " id="src-rec" data-state="idle">
+                    <div class="name">🛍️<br> Recomendações</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+
+                <div class="src-box " id="src-ship" data-state="idle">
+                    <div class="name">🚚 Acompanhamento</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+
+                <div class="src-box " id="src-pts" data-state="idle">
+                    <div class="name">⭐ Pontos Fidelidade</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+
+                <div class="src-box " id="src-up" data-state="idle">
+                    <div class="name">🏷️<br> Upsell / Ofertas</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+
+                <div class="src-box " id="src-rev" data-state="idle">
+                    <div class="name">💬 Avaliação</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+
+                <div class="src-box " id="src-share" data-state="idle">
+                    <div class="name">🔗 Compartilhar</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+
+                <div class="src-box rights" id="src-rights" data-state="idle">
+                    <div class="name">📄 Meus Direitos</div>
+                    <div class="status"><span class="dot"></span><span class="st-text">Aguardando</span></div>
+                </div>
+            </div>
             <div class="zip-arrow">→</div>
             <div class="zip-node" id="zip-node" style="background: linear-gradient(155deg, #ee56af, var(--violet-deep));">Mono.zip()<br><span style="font-size:.7rem; opacity:.75;">aguardando…</span></div>
         </div>
@@ -343,7 +345,11 @@
             </div>
             <div class="phone-stage">
                 <div class="phone">
-                    <div class="screen" id="screen"><div class="screen-empty"><span>Aguardando execução…</span></div></div>
+                    <div class="screen" id="screen">
+                        <div class="screen-empty">
+                            <span>Aguardando execução…</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -372,7 +378,7 @@
 
     <footer>
         Demo construída para a palestra "Uma feature, quatro microsserviços" · TDC São Paulo 2026 ·
-        <a class="back" style="color: var(--lime)" href="./index.html#19">← voltar para os slides</a>
+        <a class="back" style="color: var(--lime)" href="index.html#19">← voltar para os slides</a>
     </footer>
 </div>
 
@@ -634,5 +640,5 @@
 </script>
 
 
-
-</body></html>
+</body>
+</html>
