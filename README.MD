@@ -13,13 +13,15 @@ Um QR code para este repositório também está disponível no último slide da 
 
 ## 📸 Preview
 
-| Slides |
-|---|
-| ![Slide de abertura](screenshots/slides-preview.png) |
+| Slides                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------- |
+| [![Slide de abertura](screenshots/slides-preview.png)](https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/) |
+| 👉 [Clique para abrir os slides](https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/)                       |
 
-| Demo interativa |
-|---|
-| ![Demo do Mono.zip()](screenshots/demo-preview.png) |
+| Demo interativa                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [![Demo do Mono.zip()](screenshots/demo-preview.png)](https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html) |
+| 👉 [Clique para abrir a demo do Mono.zip()](https://eu-larissasouza.github.io/tdc2026-uma-feature-4-microsservicos/demo-mono-zip.html)           |
 
 ## 📁 Estrutura do repositório
 
