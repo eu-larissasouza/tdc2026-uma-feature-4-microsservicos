@@ -589,6 +589,59 @@
         margin-bottom: 0.8rem;
       }
 
+      /* Agenda (roteiro inicial e recap final dos 5 aprendizados) */
+      .agenda {
+        list-style: none;
+        margin: 1.6rem 0 0;
+        padding: 0;
+        display: grid;
+        gap: 0.7rem;
+        max-width: 60rem;
+      }
+      .agenda-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--bg-card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.7rem 1.1rem;
+      }
+      .agenda-badge {
+        flex: none;
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        color: var(--lime);
+        border: 1px solid var(--lime);
+      }
+      .agenda-title {
+        display: block;
+        font-family: var(--display);
+        font-weight: 600;
+        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+      }
+      .agenda-text {
+        display: block;
+        margin-top: 0.15rem;
+        color: var(--muted);
+        font-size: clamp(0.9rem, 1.2vw, 1.02rem);
+        line-height: 1.4;
+      }
+      .agenda.done .agenda-row {
+        border-color: rgba(198, 255, 61, 0.35);
+      }
+      .agenda.done .agenda-badge {
+        background: var(--lime);
+        color: var(--bg);
+        font-weight: 700;
+      }
+
       .diagram-row {
         display: flex;
         align-items: center;
@@ -2227,8 +2280,8 @@
           aparentemente simples.
         </p>
       </section>
-      <section class="slide" id="lesson-4">
-        <div class="lesson-num">04 / 05 · REVIEW PRECISA DE CONTEXTO</div>
+      <section class="slide" id="lesson-5">
+        <div class="lesson-num">05 / 05 · REVIEW PRECISA DE CONTEXTO</div>
         <p class="big-lesson">
           Bots de review apontam o risco.<br />
           <span style="color: var(--lime)"
@@ -2241,8 +2294,8 @@
           cobre.
         </p>
       </section>
-      <section class="slide" id="lesson-5">
-        <div class="lesson-num">05 / 05 · ENTREGA É OPERÁVEL</div>
+      <section class="slide" id="lesson-4">
+        <div class="lesson-num">04 / 05 · ENTREGA É OPERÁVEL</div>
         <p class="big-lesson">
           Uma feature só está pronta quando
           <span style="color: var(--lime)"
@@ -2479,7 +2532,9 @@
         decision,
         contract,
         bug,
-        fix
+        fix,
+        // "Aprendizados reais" saiu: agora cada bloco fecha com o seu aprendizado.
+        recap
       ].forEach(slide => slide.remove())
 
       const qrSlide = document.createElement('section')
@@ -2573,15 +2628,6 @@
         </div>
         <p class="sub" style="margin-top: 1.5rem">A IA ajuda a levantar riscos. A responsabilidade de entender contratos, fluxos e testes continua sendo nossa.</p>`
 
-      recap.innerHTML = `
-        <div class="eyebrow c-yellow">Aprendizados reais</div>
-        <h2>O que a prática ensinou além do código</h2>
-        <ul class="plain emphasis-list" style="margin-top: 1.8rem">
-            <li><b>Resiliência em sistemas distribuídos:</b> uma dependência opcional nunca deve quebrar o fluxo crítico do cliente.</li>
-            <li><b>Contratos claros entre times:</b> alinhar payloads cedo evita retrabalho em integrações assíncronas complexas.</li>
-            <li><b>Observabilidade ponta a ponta:</b> métricas e logs correlacionados economizam horas de diagnóstico.</li>
-        </ul>`
-
       deploy.innerHTML = `
         <div class="eyebrow c-tdcviolet">Deploy &amp; métricas</div>
         <h2>Da entrega contínua às feature flags</h2>
@@ -2593,8 +2639,59 @@
       const connector = document.createElement('section')
       connector.className = 'slide'
       connector.innerHTML = `<div class="eyebrow c-blue">Depois do desenvolvimento</div><p class="big-lesson">Código pronto não é entrega pronta.<br /><span style="color: var(--lime)">Agora precisamos colocá-lo em operação com segurança.</span></p><p class="sub">A demo explicou o comportamento. O próximo passo é controlar a ativação, a ordem de deploy, o rollback e o que vamos medir.</p>`
-      recap.after(connector)
-      review.before(deploy)
+      // Estrutura em blocos: agenda -> (conteúdo -> aprendizado) x 5 -> agenda final.
+      // Cada aprendizado fecha o bloco que o originou; a agenda final é o resumo.
+      demo.id = 'slide-demo' // âncora estável: a demo volta para index.html#slide-demo
+
+      const agendaItems = [
+        ['Mapear antes de codar', 'Onde a decisão acontece.', 'Mapeie quem recebe o pedido, quem decide e quem só exibe.'],
+        ['Evoluir sem quebrar', 'Mudanças que convivem com o que já existe.', 'Mudanças aditivas deixam cada serviço migrar no seu ritmo.'],
+        ['Conhecer a semântica da ferramenta', 'O que ela realmente faz.', '“Vazio” não é “valor sem conteúdo”: é nada emitido.'],
+        ['Entrega é operável', 'Ligar, desligar e reverter.', 'Pronta é quando pode ser ligada, desligada e revertida.'],
+        ['Review precisa de contexto', 'Alerta não é veredito.', 'Bots levantam hipóteses; o comportamento real confirma.']
+      ]
+      const buildAgenda = done => {
+        const s = document.createElement('section')
+        s.className = 'slide'
+        s.innerHTML = `
+          <div class="eyebrow ${done ? 'c-green' : 'c-blue'}">${done ? 'Recapitulando' : 'O roteiro'}</div>
+          <h2>${done ? 'Os 5 aprendizados' : '5 aprendizados, um bloco de cada vez'}</h2>
+          <ol class="agenda${done ? ' done' : ''}">
+            ${agendaItems
+              .map(
+                ([title, teaser, takeaway], i) => `
+              <li class="agenda-row">
+                <span class="agenda-badge">${String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <span class="agenda-title">${title}</span>
+                  <span class="agenda-text">${done ? takeaway : teaser}</span>
+                </div>
+              </li>`
+              )
+              .join('')}
+          </ol>
+          ${done ? '' : '<p class="sub" style="margin-top: 1.4rem">Cada bloco termina com um aprendizado. No fim, voltamos aqui.</p>'}`
+        return s
+      }
+      const agenda = buildAgenda(false)
+      const agendaRecap = buildAgenda(true)
+      const lesson = n => document.getElementById(`lesson-${n}`)
+      const quote = document.querySelector('.deck > .quote-slide')
+      const closing = document.querySelector('.deck > .slide-final')
+      const deck = document.getElementById('deck')
+
+      ;[
+        cover, qrSlide, bio, spike, gap, scenario,
+        agenda,
+        reactive,
+        sdui, map, lesson(1),
+        strategy, lesson(2),
+        fanout, villain, demo, lesson(3),
+        connector, flag, deploy, lesson(4),
+        review, lesson(5),
+        agendaRecap,
+        quote, closing
+      ].forEach(slide => deck.appendChild(slide))
 
       demo.querySelector('a.go-demo').setAttribute('target', '_blank')
       demo.querySelector('a.go-demo').setAttribute('rel', 'noopener noreferrer')
@@ -2606,23 +2703,24 @@
         'Planejamento: contar como a spike revelou uma complexidade maior que a aparente.',
         'Gancho: tutorial versus produção.',
         'Apresentar o card condicional.',
-        'Usar a analogia do garçom e guardar “zero ou um resultado” para a demo.',
+        'Roteiro: apresentar os 5 aprendizados pelo tema, sem entregar o bug. Avisar que cada bloco termina com um aprendizado e que voltamos aqui no final.',
+        'Usar a analogia do garçom com calma e guardar “zero ou um resultado” para a demo.',
         'Separar decisão de renderização.',
         'Percorrer o mapa; no celular ele vira fluxo vertical.',
+        'Aprendizado 1: uma frase e uma pausa. Voltar ao mapa: quem recebe, quem decide, quem só exibe.',
         'Falar das decisões de design, sem entrar no código.',
+        'Aprendizado 2: uma frase e uma pausa. Ligar ao contrato aditivo: o campo novo nasce seguro e vazio.',
         'Preparar o público para a demo.',
         'Explicar a diferença semântica e abrir a demo.',
-        'Abrir a demo em outra aba.',
-        'Conectar a demo aos aprendizados de resiliência, contrato e observabilidade.',
+        'Abrir a demo em outra aba. O link de volta da demo retorna para este slide.',
+        'Aprendizado 3: o mais importante da palestra. Amarrar à demo: “vazio” não é “valor sem conteúdo”; é nada emitido.',
         'Ponte: saímos do comportamento e entramos em operação.',
         'Feature flag como controle de exposição e rollback.',
         'Deploy, métricas e rollback fazem parte do desenho.',
+        'Aprendizado 4: uma frase e uma pausa. Ligar, desligar e reverter fazem parte do desenho.',
         'IA: alerta não é veredito; investigar o contexto.',
-        'Cinco aprendizados: uma frase e uma pausa em cada slide.',
-        'Idem.',
-        'Idem.',
-        'Idem.',
-        'Idem.',
+        'Aprendizado 5: uma frase e uma pausa. Bots levantam hipóteses; o comportamento real confirma.',
+        'Agenda de volta: percorrer os cinco itens em uma frase cada. É o slide de resumo; deixar a plateia fotografar.',
         'Citação de fechamento.',
         'Agradecer e abrir para perguntas.'
       ]
@@ -2697,11 +2795,17 @@
       const total = slides.length
       let idx = 0
 
-      // Permite abrir num slide específico via #N (ex: index.html#19),
-      // usado pelo link "voltar para os slides" da demo.
-      const hashSlide = parseInt(window.location.hash.replace('#', ''), 10)
+      // Permite abrir num slide específico via #N (ex: index.html#19) ou via
+      // id (ex: index.html#slide-demo). O link "voltar para os slides" da demo
+      // usa o id, que não quebra quando slides são adicionados ou reordenados.
+      const rawHash = decodeURIComponent(window.location.hash.replace('#', ''))
+      const hashSlide = /^\d+$/.test(rawHash) ? parseInt(rawHash, 10) : NaN
       if (!Number.isNaN(hashSlide) && hashSlide >= 1 && hashSlide <= total) {
         idx = hashSlide - 1
+      } else if (rawHash) {
+        const target = document.getElementById(rawHash)
+        const targetIdx = target ? [...slides].indexOf(target) : -1
+        if (targetIdx >= 0) idx = targetIdx
       }
 
       const notesBySlide = window.presentationNotes || [
